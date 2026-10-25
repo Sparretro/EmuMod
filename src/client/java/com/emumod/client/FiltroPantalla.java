@@ -84,7 +84,7 @@ public enum FiltroPantalla {
 	boolean sirvePara(Sistema consola) {
 		// En la PS3 (1280x720) ni el CRT: serían 8 millones de píxeles por cuadro. En la 3DS tampoco: sus dos pantallas
 		// son LCD retroiluminadas, sin el color apagado de la GBA, y la grilla de 3x3 serían casi 2 millones de píxeles
-		if (consola == Sistema.PS3 || consola == Sistema.N3DS) {
+		if (consola == Sistema.PS3 || consola == Sistema.N3DS || consola == Sistema.PSP) {
 			return this == ORIGINAL;
 		}
 		return this == ORIGINAL || (consola != Sistema.GBA) == (this == CRT);
@@ -92,7 +92,7 @@ public enum FiltroPantalla {
 
 	static FiltroPantalla porDefecto(Sistema consola) {
 		// En la PS2 (640x448) el CRT, de 3x3 por píxel, pesa demasiado para hacerlo en cada cuadro: queda a elección
-		return consola == Sistema.GBA ? COLOR_GBA : consola == Sistema.PS2 || consola == Sistema.PS3 || consola == Sistema.WII || consola == Sistema.N3DS ? ORIGINAL : CRT;
+		return consola == Sistema.GBA ? COLOR_GBA : consola == Sistema.PS2 || consola == Sistema.PS3 || consola == Sistema.WII || consola == Sistema.N3DS || consola == Sistema.PSP ? ORIGINAL : CRT;
 	}
 
 	FiltroPantalla siguiente(Sistema consola) {

@@ -144,8 +144,8 @@ public class TelevisorScreen extends Screen {
 		int derecha = width - 8 - 80;
 		botonBios = addRenderableWidget(Button.builder(textoBotonBios(), b -> elegirBios())
 				.bounds(derecha, arriba, 80, ALTO_BOTON).build());
-		// La 3DS no usa BIOS: su botón no se muestra y no ocupa lugar
-		if (doble != PortatilDoble.N3DS) {
+		// La 3DS y la PSP no usan BIOS: su botón no se muestra y no ocupa lugar
+		if (doble != PortatilDoble.N3DS && doble != PortatilDoble.PSP) {
 			derecha -= SEPARACION + 80;
 		}
 		barraVolumen = addRenderableWidget(new BarraVolumen(derecha, arriba, 80, ALTO_BOTON));
@@ -321,8 +321,8 @@ public class TelevisorScreen extends Screen {
 		if (!verMenu) {
 			dibujarAyuda(graphics);
 		}
-		// La NES, la N64 y la 3DS no usan BIOS
-		if (doble == PortatilDoble.N3DS) {
+		// La NES, la N64, la 3DS y la PSP no usan BIOS
+		if (doble == PortatilDoble.N3DS || doble == PortatilDoble.PSP) {
 			botonBios.visible = false;
 		}
 		if (tele != null) {
@@ -589,6 +589,7 @@ public class TelevisorScreen extends Screen {
 			case PS3 -> new String[] {"*.iso", "*.SFB", "*.sfb", "*.SFO", "*.sfo", "*.pkg", "*.BIN", "*.bin", "*.self", "*.elf"};
 			case WII -> new String[] {"*.iso", "*.wbfs", "*.rvz", "*.gcm", "*.gcz", "*.ciso", "*.wia", "*.wad", "*.dol", "*.elf"};
 			case N3DS -> new String[] {"*.3ds", "*.cci", "*.cxi", "*.cia", "*.3dsx"};
+			case PSP -> new String[] {"*.iso", "*.cso", "*.chd", "*.pbp", "*.elf", "*.prx"};
 			default -> new String[] {"*.gba"};
 		};
 		SelectorArchivos.abrir(Component.translatable("screen.emumod.elegir_rom" + sufijoTextos()).getString(),

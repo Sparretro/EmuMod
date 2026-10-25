@@ -36,7 +36,7 @@ public final class ModBlocks {
 	public static final BlockEntityType<GbaBlockEntity> GBA_ENTIDAD = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE,
 			EmuMod.id("gba"), BlockEntityType.Builder.of(GbaBlockEntity::new, GBA).build(null));
 
-	// La Nintendo 3DS y la Game Boy Advance SP apoyadas (abiertas); sus ítems son ModItems.N3DS y ModItems.GBA_SP
+	// La Nintendo 3DS, la Game Boy Advance SP y la PSP apoyadas (las dos primeras abiertas); sus ítems están en ModItems
 	public static final ConsolaAbiertaBlock N3DS = Registry.register(BuiltInRegistries.BLOCK, EmuMod.id("n3ds"),
 			new ConsolaAbiertaBlock(ConsolaItem.Modelo.N3DS, BlockBehaviour.Properties.of()
 					.mapColor(MapColor.COLOR_CYAN)
@@ -58,6 +58,36 @@ public final class ModBlocks {
 
 	public static final BlockEntityType<ConsolaAbiertaBlockEntity> GBA_SP_ENTIDAD = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE,
 			EmuMod.id("gba_sp"), BlockEntityType.Builder.of(ConsolaAbiertaBlockEntity::new, GBA_SP).build(null));
+
+	public static final ConsolaAbiertaBlock PSP = Registry.register(BuiltInRegistries.BLOCK, EmuMod.id("psp"),
+			new ConsolaAbiertaBlock(ConsolaItem.Modelo.PSP, BlockBehaviour.Properties.of()
+					.mapColor(MapColor.COLOR_BLACK)
+					.strength(0.3f)
+					.sound(SoundType.STONE)
+					.noOcclusion()
+					.pushReaction(PushReaction.DESTROY)));
+
+	public static final BlockEntityType<ConsolaAbiertaBlockEntity> PSP_ENTIDAD = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE,
+			EmuMod.id("psp"), BlockEntityType.Builder.of(ConsolaAbiertaBlockEntity::new, PSP).build(null));
+
+	/** El bloque de la portátil apoyada (3DS, SP o PSP) y su entidad. */
+	public static ConsolaAbiertaBlock abierta(ConsolaItem.Modelo modelo) {
+		return switch (modelo) {
+			case N3DS -> N3DS;
+			case GBA_SP -> GBA_SP;
+			case PSP -> PSP;
+			default -> throw new IllegalArgumentException(modelo + " no se apoya abierta");
+		};
+	}
+
+	public static BlockEntityType<ConsolaAbiertaBlockEntity> entidadAbierta(ConsolaItem.Modelo modelo) {
+		return switch (modelo) {
+			case N3DS -> N3DS_ENTIDAD;
+			case GBA_SP -> GBA_SP_ENTIDAD;
+			case PSP -> PSP_ENTIDAD;
+			default -> throw new IllegalArgumentException(modelo + " no se apoya abierta");
+		};
+	}
 
 	// La NES y su televisor CRT; sus ítems están en ModItems
 	public static final NesBlock NES = Registry.register(BuiltInRegistries.BLOCK, EmuMod.id("nes"),

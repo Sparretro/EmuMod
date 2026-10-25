@@ -27,10 +27,9 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.presets.WorldPresets;
 
-// Solo para desarrollo (-Dtelevisor.dev.mundo -Dtelevisor.dev.solo=n3ds o nds): como DevMundo pero solo con la 3DS o la DS.
-// Crea un mundo, la pone en la mano, juega el programa de prueba (-Dtelevisor.dev.juego_doble, native/prueba3ds o
-// native/pruebands), aprieta
-// botones, toca la pantalla, abre el menú, la apoya y guarda capturas en run/screenshots.
+// Solo para desarrollo (-Demumod.dev.mundo -Demumod.dev.solo=n3ds, gba_sp o psp): como DevMundo pero solo con esa portátil.
+// Crea un mundo, la pone en la mano, juega el programa de prueba (-Demumod.dev.juego_doble; la PSP sin eso usa
+// RomDePruebaPsp), aprieta botones, toca la pantalla, abre el menú, la apoya y guarda capturas en run/screenshots.
 final class DevDoble {
 	private final PortatilDoble consola;
 	private final String nombre;
@@ -61,7 +60,7 @@ final class DevDoble {
 		switch (ticks) {
 			case 1 -> mc.getSingleplayerServer().execute(() -> {
 				ServerPlayer jugador = mc.getSingleplayerServer().getPlayerList().getPlayers().get(0);
-				jugador.getInventory().setItem(0, new ItemStack(consola == PortatilDoble.N3DS ? ModItems.N3DS : ModItems.GBA_SP));
+				jugador.getInventory().setItem(0, new ItemStack(ModItems.de(consola.modelo)));
 				jugador.serverLevel().setDayTime(6000);
 			});
 			case 5 -> {
@@ -75,6 +74,16 @@ final class DevDoble {
 				TelevisorScreen pantalla = new TelevisorScreen(consola.modelo);
 				mc.setScreen(pantalla);
 				String juego = System.getProperty("emumod.dev.juego_doble", "");
+				// La PSP, sin juego indicado, con el programa de prueba propio (RomDePruebaPsp)
+				if (juego.isEmpty() && consola.sistema == com.emumod.client.emu.Sistema.PSP) {
+					try {
+						Path elf = mc.gameDirectory.toPath().resolve("pruebapsp.elf");
+						java.nio.file.Files.write(elf, com.emumod.client.emu.RomDePruebaPsp.elf());
+						juego = elf.toString();
+					} catch (java.io.IOException e) {
+						throw new java.io.UncheckedIOException(e);
+					}
+				}
 				if (!juego.isEmpty()) {
 					EmuladorCliente.de(consola.sistema).cargarRom(Path.of(juego), m -> {
 						pantalla.mostrar(m);
@@ -142,7 +151,7 @@ final class DevDoble {
 				}
 			}
 			jugador.teleportTo(mundo, pies.getX() + 0.5, pies.getY(), pies.getZ() + 0.5, 180, 40);
-			var bloque = (consola == PortatilDoble.N3DS ? ModBlocks.N3DS : ModBlocks.GBA_SP).defaultBlockState().setValue(GbaBlock.FACING, Direction.NORTH);
+			var bloque = ModBlocks.abierta(consola.modelo).defaultBlockState().setValue(GbaBlock.FACING, Direction.NORTH);
 			mundo.setBlockAndUpdate(pies.offset(-1, 0, -2), bloque);
 			mundo.setBlockAndUpdate(pies.offset(1, 0, -2), Blocks.OAK_PLANKS.defaultBlockState());
 			mundo.setBlockAndUpdate(pies.offset(1, 1, -2), bloque);

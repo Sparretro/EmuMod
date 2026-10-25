@@ -18,7 +18,7 @@ import net.minecraft.client.Screenshot;
 // Con -Demumod.dev.consola=gba|gba_sp abre la pantalla de esa consola en vez del televisor, y con
 // -Demumod.dev.botones=N la dibuja con esos botones del GBA apretados (máscara de Nucleo.Boton).
 // Con -Demumod.dev.mundo crea un mundo y saca capturas de las consolas en la mano (ver DevMundo).
-// Con -Demumod.dev.solo=n3ds o gba_sp además, solo la 3DS o la SP (ver DevDoble).
+// Con -Demumod.dev.solo=n3ds, gba_sp o psp además, solo esa portátil (ver DevDoble).
 final class DevCaptura {
 	private static final int TICKS_ANTES_DE_CAPTURAR = 80;
 
@@ -34,6 +34,7 @@ final class DevCaptura {
 		PortatilDoble solo = switch (System.getProperty("emumod.dev.solo", "")) {
 			case "n3ds" -> PortatilDoble.N3DS;
 			case "gba_sp" -> PortatilDoble.GBA_SP;
+			case "psp" -> PortatilDoble.PSP;
 			default -> null;
 		};
 		if (Boolean.getBoolean("emumod.dev.mundo") && solo != null) {

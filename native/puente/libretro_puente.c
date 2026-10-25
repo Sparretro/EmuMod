@@ -752,10 +752,12 @@ EXPORTAR bool retro_load_game(const void *juego) {
 
 EXPORTAR void retro_unload_game(void) {
 	entrar();
-	n_unload_game();
+	// Como RetroArch: primero se avisa que se va el contexto de video y después se descarga el juego (PPSSPP libera sus
+	// cosas de OpenGL en el aviso y después ya no las tiene)
 	if (hw_en_uso && hw_pedido && hw_pedido->contexto_destruido) {
 		hw_pedido->contexto_destruido();
 	}
+	n_unload_game();
 	hw_en_uso = false;
 	hw_pedido = NULL;
 	despues();

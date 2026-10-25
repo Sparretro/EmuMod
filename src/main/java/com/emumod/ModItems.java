@@ -23,6 +23,20 @@ public final class ModItems {
 	public static final Item GBA_SP = Registry.register(BuiltInRegistries.ITEM, EmuMod.id("gba_sp"),
 			new GbaItem(ModBlocks.GBA_SP, ConsolaItem.Modelo.GBA_SP, new Item.Properties().stacksTo(1)));
 
+	// La PSP: se juega en las manos y se apoya acostada, como la GBA
+	public static final Item PSP = Registry.register(BuiltInRegistries.ITEM, EmuMod.id("psp"),
+			new GbaItem(ModBlocks.PSP, ConsolaItem.Modelo.PSP, new Item.Properties().stacksTo(1)));
+
+	/** El ítem de cada portátil. */
+	public static Item de(ConsolaItem.Modelo modelo) {
+		return switch (modelo) {
+			case GBA -> GBA;
+			case GBA_SP -> GBA_SP;
+			case N3DS -> N3DS;
+			case PSP -> PSP;
+		};
+	}
+
 	public static final Item NES = Registry.register(BuiltInRegistries.ITEM, EmuMod.id("nes"),
 			new NesItem(ModBlocks.NES, "nes", new Item.Properties().stacksTo(1)));
 
@@ -86,6 +100,7 @@ public final class ModItems {
 			entries.accept(GBA);
 			entries.accept(GBA_SP);
 			entries.accept(N3DS);
+			entries.accept(PSP);
 			entries.accept(CONTROL_NES);
 			entries.accept(CONTROL_N64);
 			entries.accept(CONTROL_PS2);

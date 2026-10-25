@@ -1,0 +1,11 @@
+Modelo 3D de la PSP
+
+"Sony PSP" por Ilya Ostrovsky
+https://sketchfab.com/3d-models/sony-psp-dca89d10ec304d0cab76837750df7761
+Autor: https://sketchfab.com/strov
+Licencia: Creative Commons Atribución 4.0 Internacional (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/
+
+Cambios hechos para EmuMod (tools/ConvertirModelo.java --girar-x -45): se pasó del formato GLB a un formato binario
+propio (assets/emumod/modelos/psp.bin), se giró 45° para que quede acostado, se quitó el piso que traía y la imagen de la
+pantalla se pintó de negro. En el juego, la pantalla muestra el juego emulado y los botones se hunden al apretarlos.

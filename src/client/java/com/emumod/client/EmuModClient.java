@@ -36,16 +36,17 @@ public class EmuModClient implements ClientModInitializer {
 			EmuladorCliente emulador = EmuladorCliente.get();
 			ModeloGba3D.dibujar(pose, buffers, luz, overlay, 0, emulador.hayJuego() ? emulador.textura() : null, emulador.pausadoPorJugador());
 		});
-		// La 3DS y la GBA SP igual: su modelo en la mano y apoyada, con el juego en sus pantallas
+		// La 3DS, la GBA SP y la PSP igual: su modelo en la mano y apoyada, con el juego en sus pantallas
 		for (PortatilDoble p : PortatilDoble.values()) {
-			BuiltinItemRendererRegistry.INSTANCE.register(p == PortatilDoble.N3DS ? ModItems.N3DS : ModItems.GBA_SP, (stack, modo, pose, buffers, luz, overlay) -> {
+			BuiltinItemRendererRegistry.INSTANCE.register(ModItems.de(p.modelo), (stack, modo, pose, buffers, luz, overlay) -> {
 				EmuladorCliente emulador = EmuladorCliente.de(p.sistema);
 				ModeloDoble.dibujar(p, pose, buffers, luz, overlay, 0, null, emulador.hayJuego() ? emulador.textura() : null, emulador.pausadoPorJugador());
 			});
 		}
 		BlockEntityRenderers.register(ModBlocks.GBA_ENTIDAD, contexto -> new GbaBlockRenderer());
-		BlockEntityRenderers.register(ModBlocks.N3DS_ENTIDAD, contexto -> new DobleBlockRenderer(PortatilDoble.N3DS));
-		BlockEntityRenderers.register(ModBlocks.GBA_SP_ENTIDAD, contexto -> new DobleBlockRenderer(PortatilDoble.GBA_SP));
+		for (PortatilDoble p : PortatilDoble.values()) {
+			BlockEntityRenderers.register(ModBlocks.entidadAbierta(p.modelo), contexto -> new DobleBlockRenderer(p));
+		}
 		// NES, N64, PS2 y PS3: la consola, el televisor CRT, los controles y el asiento invisible para jugar sentado
 		BlockEntityRenderers.register(ModBlocks.NES_ENTIDAD, contexto -> new NesRenderer<>(ConsolaTele.NES));
 		BlockEntityRenderers.register(ModBlocks.N64_ENTIDAD, contexto -> new NesRenderer<>(ConsolaTele.N64));
@@ -88,15 +89,16 @@ public class EmuModClient implements ClientModInitializer {
 		// Que la partida del cartucho quede guardada aunque se cierre Minecraft con un juego abierto
 		ClientLifecycleEvents.CLIENT_STOPPING.register(mc -> EmuladorCliente.todas().forEach(EmuladorCliente::cerrar));
 		KeyBindingHelper.registerKeyBinding(TECLA_OPCIONES);
-		// Con la GBA, la SP o la 3DS en la mano y sin estar jugando, la tecla la sube a los ojos con las opciones abiertas
+		// Con una portátil (GBA, SP, 3DS o PSP) en la mano y sin estar jugando, la tecla la sube a los ojos con las opciones abiertas
 		ClientTickEvents.END_CLIENT_TICK.register(mc -> {
 			while (TECLA_OPCIONES.consumeClick()) {
 				ConsolaItem.Modelo enLaMano = null;
 				if (mc.player != null) {
 					for (var mano : new net.minecraft.world.item.ItemStack[] {mc.player.getMainHandItem(), mc.player.getOffhandItem()}) {
-						if (enLaMano == null) {
-							enLaMano = mano.is(ModItems.GBA) ? ConsolaItem.Modelo.GBA : mano.is(ModItems.N3DS) ? ConsolaItem.Modelo.N3DS
-									: mano.is(ModItems.GBA_SP) ? ConsolaItem.Modelo.GBA_SP : null;
+						for (ConsolaItem.Modelo m : ConsolaItem.Modelo.values()) {
+							if (enLaMano == null && mano.is(ModItems.de(m))) {
+								enLaMano = m;
+							}
 						}
 					}
 				}

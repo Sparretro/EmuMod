@@ -131,6 +131,10 @@ public final class Nucleo {
 		if (nucleo == null) {
 			// Citra crea su subcarpeta adentro y no puede si la carpeta de sistema todavía no existe
 			java.nio.file.Files.createDirectories(carpetaSistema);
+			// PPSSPP busca sus archivos de sistema (fuentes, compat.ini, los dibujos de sus diálogos) en sistema/PPSSPP
+			if (consola == Sistema.PSP) {
+				Nativos.extraerSistema(carpetaSistema, "PPSSPP.zip");
+			}
 			// Una copia del puente por consola: cada copia maneja un solo núcleo
 			Path puente = consola.usaPuente()
 					? Nativos.extraer(carpetaNativos, "libretro_puente", "libretro_puente_" + consola.name().toLowerCase(java.util.Locale.ROOT)) : null;

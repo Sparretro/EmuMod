@@ -30,6 +30,10 @@ public class ConsolaAbiertaBlock extends GbaBlock {
 		this.modelo = modelo;
 	}
 
+	public ConsolaItem.Modelo modelo() {
+		return modelo;
+	}
+
 	@Override
 	public BlockState getStateForPlacement(BlockPlaceContext context) {
 		// Siempre acostada, con la pantalla de abajo del lado del jugador

@@ -47,6 +47,8 @@ public final class EmuladorCliente {
 	private static final java.util.Set<String> EXTENSIONES_WII = java.util.Set.of(".iso", ".gcm", ".wbfs", ".rvz", ".wia", ".gcz", ".ciso", ".wad", ".dol", ".elf", ".m3u");
 	// 3DS: juegos desencriptados (Citra no abre los cifrados) y programas caseros
 	private static final java.util.Set<String> EXTENSIONES_3DS = java.util.Set.of(".3ds", ".cci", ".cxi", ".cia", ".3dsx", ".app", ".elf", ".axf");
+	// PSP: imágenes de UMD (.iso, comprimidas .cso o .chd), juegos de la tienda y caseros (.pbp) y ejecutables
+	private static final java.util.Set<String> EXTENSIONES_PSP = java.util.Set.of(".iso", ".cso", ".chd", ".pbp", ".elf", ".prx");
 	// El firmware de PS3 (PS3UPDAT.PUP) pesa unos 200 MB y empieza con "SCEUF"
 	private static final long TAMANIO_MINIMO_FIRMWARE_PS3 = 50L * 1024 * 1024;
 	private static final long TAMANIO_MINIMO_BIOS_PS2 = 4L * 1024 * 1024, TAMANIO_MAXIMO_BIOS_PS2 = 8L * 1024 * 1024;
@@ -78,7 +80,7 @@ public final class EmuladorCliente {
 		cuadro = new int[consola.ancho * consola.alto];
 		filtro = FiltroPantalla.porDefecto(consola);
 		// Con la NES y la N64 se mira un televisor a unos metros: más cerrado se ve más grande; las portátiles van a los ojos
-		fovConsola = consola == Sistema.GBA || consola == Sistema.N3DS ? 70 : 50;
+		fovConsola = consola == Sistema.GBA || consola == Sistema.N3DS || consola == Sistema.PSP ? 70 : 50;
 		cargarOpciones();
 	}
 
@@ -265,8 +267,8 @@ public final class EmuladorCliente {
 	private void cargarDisco(Path archivo, Consumer<Mensaje> alTerminar) {
 		String nombre = archivo.getFileName().toString();
 		String extension = nombre.contains(".") ? nombre.substring(nombre.lastIndexOf('.')).toLowerCase(java.util.Locale.ROOT) : "";
-		boolean ps3 = consola == Sistema.PS3, wii = consola == Sistema.WII, n3ds = consola == Sistema.N3DS;
-		if (!(n3ds ? EXTENSIONES_3DS : wii ? EXTENSIONES_WII : ps3 ? EXTENSIONES_PS3 : EXTENSIONES_PS2).contains(extension)) {
+		boolean ps3 = consola == Sistema.PS3, wii = consola == Sistema.WII, n3ds = consola == Sistema.N3DS, psp = consola == Sistema.PSP;
+		if (!(psp ? EXTENSIONES_PSP : n3ds ? EXTENSIONES_3DS : wii ? EXTENSIONES_WII : ps3 ? EXTENSIONES_PS3 : EXTENSIONES_PS2).contains(extension)) {
 			alTerminar.accept(Mensaje.error("screen.emumod.rom_invalida_" + consola.name().toLowerCase(java.util.Locale.ROOT), nombre));
 			return;
 		}
@@ -274,8 +276,8 @@ public final class EmuladorCliente {
 			alTerminar.accept(Mensaje.error("screen.emumod.error_lectura", nombre));
 			return;
 		}
-		// La Wii y la 3DS no necesitan BIOS ni firmware
-		if (wii || n3ds) {
+		// La Wii, la 3DS y la PSP no necesitan BIOS ni firmware
+		if (wii || n3ds || psp) {
 			pausadoPorJugador = false;
 			hilo().cargarArchivo(archivo, nombre, java.util.Map.of(), enRender(alTerminar));
 			return;

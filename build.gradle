@@ -284,6 +284,39 @@ def extraerNucleo3ds = tasks.register("extraerNucleo3ds", Copy) {
 	into layout.buildDirectory.dir("nativos3ds")
 }
 
+// ---- Núcleo de PSP: PPSSPP para libretro (GPL-2), DLL oficial del buildbot de libretro ----
+// Compilar PPSSPP pide CMake y Visual Studio; se usa la DLL nightly y se verifica
+def extraerNucleoPsp = tasks.register("extraerNucleoPsp", Copy) {
+	description = "Extrae la DLL de PPSSPP (buildbot de libretro) para Windows x64"
+	def zip = layout.projectDirectory.file("native/PPSSPP-win64/ppsspp_libretro.dll.zip")
+	inputs.file(zip)
+	doFirst {
+		def hash = java.security.MessageDigest.getInstance("SHA-256").digest(zip.asFile.bytes).encodeHex().toString()
+		if (hash != "9ae357577991c99747db7e2a9b0c1283e044e1a8351f908d234b75cd8e12d517") {
+			throw new GradleException("La DLL de PPSSPP no es la esperada (SHA-256 ${hash})")
+		}
+	}
+	from(zipTree(zip)) {
+		include "ppsspp_libretro.dll"
+		into "natives/windows-x64"
+	}
+	into layout.buildDirectory.dir("nativosPsp")
+}
+
+def verificarSistemaPsp = tasks.register("verificarSistemaPsp", Copy) {
+	description = "Verifica los archivos de sistema de PPSSPP (assets/system/PPSSPP.zip del buildbot de libretro)"
+	def zip = layout.projectDirectory.file("native/PPSSPP-win64/PPSSPP.zip")
+	inputs.file(zip)
+	doFirst {
+		def hash = java.security.MessageDigest.getInstance("SHA-256").digest(zip.asFile.bytes).encodeHex().toString()
+		if (hash != "f7152b5e1e6adb0eab807412f4b900e0737e7d37e6d9ee010795b5dc1d2cb494") {
+			throw new GradleException("Los archivos de sistema de PPSSPP no son los esperados (SHA-256 ${hash})")
+		}
+	}
+	from(zip)
+	into layout.buildDirectory.dir("sistemaPsp")
+}
+
 // Puente propio (native/puente) entre Java y el núcleo de N64: atiende los callbacks que el núcleo hace desde su corrutina
 def compilarPuente = tasks.register("compilarPuente", Exec) {
 	description = "Compila el puente libretro del mod como DLL para Windows x64"
@@ -314,6 +347,11 @@ processClientResources {
 	from(extraerNucleoPs3)
 	from(extraerNucleoWii)
 	from(extraerNucleo3ds)
+	from(extraerNucleoPsp)
+	// Archivos de sistema de PPSSPP (del buildbot de libretro): Nucleo los descomprime en la carpeta de sistema
+	from(verificarSistemaPsp) {
+		into "sistema"
+	}
 	from(compilarPuente) {
 		include "**/*.dll"
 	}
@@ -404,6 +442,18 @@ tasks.register("probarN3ds", JavaExec) {
 	systemProperty "emumod.cuadros", providers.gradleProperty("cuadros").getOrElse("0")
 	args layout.buildDirectory.dir("pruebas-3ds").get().asFile.path,
 			providers.gradleProperty("juego").getOrElse(layout.projectDirectory.file("native/prueba3ds/prueba3ds.3dsx").asFile.path), "N3DS"
+}
+
+tasks.register("probarPsp", JavaExec) {
+	description = "Corre el programa de prueba propio de PSP (o el juego indicado) en PPSSPP; capturas en build/pruebas-psp"
+	classpath = sourceSets.pruebasNucleo.runtimeClasspath
+	mainClass = "com.emumod.pruebas.PruebaPsp"
+	javaLauncher = javaToolchains.launcherFor {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+	jvmArgs "-Demumod.depurar=true"
+	systemProperty "emumod.cuadros", providers.gradleProperty("cuadros").getOrElse("0")
+	args layout.buildDirectory.dir("pruebas-psp").get().asFile.path, providers.gradleProperty("juego").getOrElse("")
 }
 
 tasks.register("probarNucleo", JavaExec) {

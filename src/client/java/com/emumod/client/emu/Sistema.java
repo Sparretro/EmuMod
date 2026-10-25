@@ -87,7 +87,19 @@ public enum Sistema {
 			entry("citra_region_value", "Auto"),
 			entry("citra_language", "Spanish"),
 			entry("citra_use_virtual_sd", "enabled"),
-			entry("citra_use_libretro_save_path", "LibRetro Default")));
+			entry("citra_use_libretro_save_path", "LibRetro Default"))),
+	// PPSSPP para libretro (GPL-2), PSP: dibuja con OpenGL (el contexto propio del puente, como la 3DS) a la resolución
+	// de la PSP y lee el juego del disco (.iso, .cso, .pbp, .elf). No hace falta BIOS: emula el sistema por HLE. Sus
+	// archivos de sistema (fuentes y textos) van en sistema/PPSSPP. ✕ confirma, como en las PSP de América y Europa
+	PSP("ppsspp_libretro", 480, 272, ".iso", Map.ofEntries(
+			entry("ppsspp_backend", "opengl"),
+			entry("ppsspp_cpu_core", "JIT"),
+			entry("ppsspp_internal_resolution", "480x272"),
+			entry("ppsspp_button_preference", "Cross"),
+			entry("ppsspp_psp_model", "psp_2000_3000"),
+			// Sin recortar 2 líneas para dejarla en 16:9: la pantalla entera, 480x272
+			entry("ppsspp_cropto16x9", "disabled"),
+			entry("ppsspp_language", "Automatic")));
 
 	/** Nombre de la DLL dentro de {@code natives/<plataforma>/}, sin extensión. */
 	public final String biblioteca;
@@ -110,17 +122,17 @@ public enum Sistema {
 	 * native/puente.
 	 */
 	boolean usaPuente() {
-		return this == N64 || this == PS2 || this == PS3 || this == WII || this == N3DS;
+		return this == N64 || this == PS2 || this == PS3 || this == WII || this == N3DS || this == PSP;
 	}
 
 	/** El núcleo lee el juego del disco (retro_game_info sin datos): las imágenes de PS2 y PS3 pesan gigas. */
 	public boolean leeDelDisco() {
-		return this == PS2 || this == PS3 || this == WII || this == N3DS;
+		return this == PS2 || this == PS3 || this == WII || this == N3DS || this == PSP;
 	}
 
 	/** El núcleo dibuja con OpenGL: el puente le crea un contexto propio. */
 	boolean usaGl() {
-		return this == WII || this == N3DS;
+		return this == WII || this == N3DS || this == PSP;
 	}
 
 	/** Mupen64Plus-Next sigue corriendo el juego anterior en su corrutina hasta retro_deinit: para cambiar de juego se reinicia. */

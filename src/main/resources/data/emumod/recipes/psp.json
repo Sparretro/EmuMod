@@ -1,0 +1,29 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"IGI",
+		"BRB",
+		"KIK"
+	],
+	"key": {
+		"I": {
+			"item": "minecraft:iron_ingot"
+		},
+		"G": {
+			"item": "minecraft:glass_pane"
+		},
+		"B": {
+			"item": "minecraft:stone_button"
+		},
+		"R": {
+			"item": "minecraft:redstone"
+		},
+		"K": {
+			"item": "minecraft:black_dye"
+		}
+	},
+	"result": {
+		"item": "emumod:psp"
+	}
+}

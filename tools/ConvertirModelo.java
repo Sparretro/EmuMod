@@ -26,6 +26,7 @@ import java.util.Map;
 //        [--simplificar-texturas]  (también simplifica piezas con textura, sin mezclar coordenadas de textura distintas)
 //        [--quitar <regex>]  (descarta las piezas cuyo nombre coincide, como un control o cables que vienen con la consola)
 //        [--separar <regex>]  (parte esas piezas en sus partes sueltas, <nombre>_0, _1...: para hundir botones que vienen juntos)
+//        [--girar-x <grados>]  (gira el modelo alrededor del eje x, para modelos exportados inclinados)
 //        [--opaco]  (dibuja todas las piezas opacas, para modelos que marcan como translúcida la carcasa entera)
 //        [--z-arriba]  (para modelos exportados con z hacia arriba: queda y arriba y lo que estaba en -y, hacia +z)
 //        [--ejes <x,y,z>]  (reacomoda los ejes: por ejemplo "-y,x,z" pone el eje y viejo, dado vuelta, como el x nuevo;
@@ -112,6 +113,22 @@ public class ConvertirModelo {
 					}
 				}
 			}
+		}
+		int posGirar = resto.indexOf("--girar-x");
+		if (posGirar >= 0) {
+			double angulo = Math.toRadians(Double.parseDouble(resto.get(posGirar + 1)));
+			float c = (float) Math.cos(angulo), s = (float) Math.sin(angulo);
+			for (Pieza p : piezas) {
+				for (int i = 0; i < p.datos.length; i += 8) {
+					for (int o : new int[] {1, 6}) {
+						float y = p.datos[i + o], z = p.datos[i + o + 1];
+						p.datos[i + o] = y * c - z * s;
+						p.datos[i + o + 1] = y * s + z * c;
+					}
+				}
+			}
+			resto.remove(posGirar + 1);
+			resto.remove(posGirar);
 		}
 		int posSeparar = resto.indexOf("--separar");
 		if (posSeparar >= 0) {

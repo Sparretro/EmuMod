@@ -51,6 +51,42 @@ final class Nativos {
 		return destino;
 	}
 
+	/**
+	 * Descomprime en la carpeta de sistema los archivos que un núcleo necesita además de su DLL (el zip va en el jar, en
+	 * {@code /sistema/}). Se hace una vez por versión del zip: deja una marca con su hash y no pisa lo que el núcleo
+	 * guardó después (partidas, configuración), solo los archivos que vienen en el zip.
+	 */
+	static void extraerSistema(Path carpetaSistema, String zip) throws IOException {
+		byte[] datos;
+		try (InputStream in = Nativos.class.getResourceAsStream("/sistema/" + zip)) {
+			if (in == null) {
+				throw new IOException("Falta /sistema/" + zip + " en el mod");
+			}
+			datos = in.readAllBytes();
+		}
+		Path marca = carpetaSistema.resolve("." + zip + "-" + hash(datos).substring(0, 16));
+		if (Files.exists(marca)) {
+			return;
+		}
+		Path raiz = carpetaSistema.toAbsolutePath().normalize();
+		try (java.util.zip.ZipInputStream entrada = new java.util.zip.ZipInputStream(new java.io.ByteArrayInputStream(datos))) {
+			for (java.util.zip.ZipEntry e; (e = entrada.getNextEntry()) != null;) {
+				Path destino = raiz.resolve(e.getName()).normalize();
+				if (!destino.startsWith(raiz)) {
+					throw new IOException("Ruta inválida en " + zip + ": " + e.getName());
+				}
+				if (e.isDirectory()) {
+					Files.createDirectories(destino);
+				} else {
+					Files.createDirectories(destino.getParent());
+					Files.copy(entrada, destino, StandardCopyOption.REPLACE_EXISTING);
+				}
+			}
+		}
+		Files.createDirectories(carpetaSistema);
+		Files.write(marca, new byte[0]);
+	}
+
 	private static String hash(byte[] datos) {
 		try {
 			return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(datos));

@@ -5,8 +5,8 @@ import com.emumod.client.emu.Nucleo.Boton;
 import com.emumod.client.emu.Sistema;
 
 /**
- * Las portátiles de tapa (la 3DS y la Game Boy Advance SP): se juegan en las manos como la GBA; en la 3DS la pantalla de
- * abajo es táctil.
+ * Las portátiles con modelo 3D propio (la 3DS, la Game Boy Advance SP y la PSP): se juegan en las manos como la GBA; en
+ * la 3DS la pantalla de abajo es táctil.
  * Cada una trae su modelo 3D, dónde están sus pantallas y botones en ese modelo y cómo se sostiene (ver
  * {@link ModeloDoble} y {@link ManosDoble}).
  *
@@ -63,7 +63,36 @@ enum PortatilDoble {
 					new BotonModelo(Boton.R.mascara(), "Object_7_6", 1.666f, -0.071f, 0.3f)},
 			new BotonModelo(0, "Object_4_0", -0.969f, 1.443f, 0.4f),
 			new float[] {1, 0}, new float[] {0, -1},
-			-0.04f, -0.62f, 45, 0.72f, new float[] {0.43f, -0.27f, 0.05f}, new float[] {0.30f, 0.93f, -0.20f});
+			-0.04f, -0.62f, 45, 0.72f, new float[] {0.43f, -0.27f, 0.05f}, new float[] {0.30f, 0.93f, -0.20f}),
+	/**
+	 * «Sony PSP» de Ilya Ostrovsky (CC-BY-4.0, Sketchfab), girado 45° para que quede acostado (venía apoyado) y sin el piso
+	 * que trae; la imagen de su pantalla se pintó de negro. Cada botón es una pieza: la cruz son cuatro (las flechas van
+	 * con radio 0 para que el mouse use la zona de la cruz, que permite diagonales). El jugador está del lado de +z y +x
+	 * es su derecha. La pantalla, de 480x272, está en la misma cara que los botones; los gatillos, en las esquinas de atrás.
+	 */
+	PSP(Sistema.PSP, ConsolaItem.Modelo.PSP, "psp", 16.76f, 2.2455f, -2.2455f, 0.956f, false,
+			new float[][] {{-4.726f, 3.246f, -5.141f}, {4.700f, 3.246f, -5.141f}, {4.700f, 3.246f, 0.158f}, {-4.726f, 3.246f, 0.158f}},
+			new float[] {0, 1, 0}, new float[] {0, 0, 1, 1}, null, null, 3.30f,
+			new BotonModelo[] {
+					new BotonModelo(Boton.ARRIBA.mascara(), "button1_low_sony_psp_0", -6.48f, -3.374f, 0),
+					new BotonModelo(Boton.ABAJO.mascara(), "button3_low_sony_psp_0", -6.48f, -1.810f, 0),
+					new BotonModelo(Boton.DERECHA.mascara(), "button2_low_sony_psp_0", -5.698f, -2.592f, 0),
+					new BotonModelo(Boton.IZQUIERDA.mascara(), "button4_low_sony_psp_0", -7.262f, -2.592f, 0),
+					// △ ◯ ✕ □: X, A, B e Y del RetroPad, por posición
+					new BotonModelo(Boton.X.mascara(), "button5_low_sony_psp_0", 6.521f, -3.663f, 0.5f),
+					new BotonModelo(Boton.A.mascara(), "button6_low_sony_psp_0", 7.616f, -2.617f, 0.5f),
+					new BotonModelo(Boton.B.mascara(), "button7_low_sony_psp_0", 6.572f, -1.523f, 0.5f),
+					new BotonModelo(Boton.Y.mascara(), "button8_low_sony_psp_0", 5.476f, -2.567f, 0.5f),
+					new BotonModelo(Boton.SELECT.mascara(), "button14_low_sony_psp_0", 3.647f, 0.910f, 0.45f),
+					new BotonModelo(Boton.START.mascara(), "button15_low_sony_psp_0", 4.748f, 0.910f, 0.45f),
+					new BotonModelo(Boton.L.mascara(), null, -6.8f, -5.4f, 1.0f),
+					new BotonModelo(Boton.R.mascara(), null, 6.8f, -5.4f, 1.0f)},
+			new BotonModelo(0, null, -6.48f, -2.592f, 1.25f),
+			// La palanca analógica, abajo de la cruz (es parte de la carcasa: no se mueve, pero se arrastra con el mouse)
+			new BotonModelo(0, null, -6.44f, -0.38f, 0.6f),
+			new float[] {1, 0}, new float[] {0, -1},
+			-0.02f, -0.62f, 75, 0.95f, new float[] {0.45f, -0.25f, 0.05f}, new float[] {0.30f, 0.93f, -0.20f});
+
 
 	/** Botón del modelo: máscara del RetroPad, pieza o piezas que se hunden (separadas por «|», o null), centro (x, z) en la base y radio para el mouse. */
 	record BotonModelo(int mascara, String pieza, float x, float z, float radio) {
@@ -107,6 +136,7 @@ enum PortatilDoble {
 				botones, cruz, null, derecha, haciaBisagra, manosY, manosZ, inclinacion, escalaManos, agarre, brazo);
 	}
 
+	// Completo (la PSP: una sola pantalla, con palanca)
 	PortatilDoble(Sistema sistema, ConsolaItem.Modelo modelo, String nombreModelo, float ancho, float centroY, float centroZ, float pisoY,
 			boolean darVuelta, float[][] arriba, float[] normalArriba, float[] uvArriba, float[][] abajo, float[] uvAbajo, float superficie,
 			BotonModelo[] botones, BotonModelo cruz, BotonModelo palanca, float[] derecha, float[] haciaBisagra, float manosY, float manosZ,

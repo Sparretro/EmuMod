@@ -1,0 +1,16 @@
+PPSSPP (núcleo de PSP)
+
+- Emulador: PPSSPP, de Henrik Rydgård y colaboradores — https://www.ppsspp.org
+- Licencia: GNU General Public License versión 2.0 o posterior (texto completo en PPSSPP-GPL-2.0.txt, junto con el aviso
+  BSD del PSPSDK que PPSSPP incluye).
+- En EmuMod: natives/windows-x64/ppsspp_libretro.dll, la DLL nightly oficial del buildbot de libretro
+  (https://buildbot.libretro.com/nightly/windows/x86_64/latest/ppsspp_libretro.dll.zip), sin modificar.
+  SHA-256 del zip: 9ae357577991c99747db7e2a9b0c1283e044e1a8351f908d234b75cd8e12d517
+- Código fuente exacto de esa DLL: https://github.com/hrydgard/ppsspp en el commit
+  09b899845a4eef907432e3ea9a0dd529cb2cb833 (el núcleo libretro está en la carpeta libretro/ del mismo repositorio).
+- Archivos de sistema (sistema/PPSSPP.zip, que el mod descomprime en config/emumod/sistema/PPSSPP): el paquete
+  assets/system/PPSSPP.zip del buildbot de libretro, sin modificar (SHA-256
+  f7152b5e1e6adb0eab807412f4b900e0737e7d37e6d9ee010795b5dc1d2cb494). Son la carpeta assets/ de PPSSPP, bajo su misma
+  licencia; las fuentes de flash0/font son los reemplazos libres que trae PPSSPP (no las fuentes originales de la PSP),
+  y las Roboto Condensed e Inconsolata son de Google Fonts (Apache 2.0 y SIL OFL 1.1).
+- PPSSPP emula el sistema de la PSP por HLE: no hace falta ni se incluye ningún archivo de Sony.

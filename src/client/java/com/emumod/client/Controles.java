@@ -145,6 +145,27 @@ public final class Controles {
 			Accion.boton("Cruz derecha", GLFW.GLFW_KEY_H, Boton.DERECHA.mascara()));
 
 
+	// PSP: como la PS2 (flechas = cruz, W A S D = palanca analógica, Z X C V = ✕ ◯ □ △) con un solo gatillo por lado.
+	// PPSSPP lee ✕ ◯ □ △ de B, A, Y y X del RetroPad (por posición)
+	private static final List<Accion> PSP = List.of(
+			Accion.boton("Cruz arriba", GLFW.GLFW_KEY_UP, Boton.ARRIBA.mascara()),
+			Accion.boton("Cruz abajo", GLFW.GLFW_KEY_DOWN, Boton.ABAJO.mascara()),
+			Accion.boton("Cruz izquierda", GLFW.GLFW_KEY_LEFT, Boton.IZQUIERDA.mascara()),
+			Accion.boton("Cruz derecha", GLFW.GLFW_KEY_RIGHT, Boton.DERECHA.mascara()),
+			Accion.boton("Equis", GLFW.GLFW_KEY_Z, Boton.B.mascara()),
+			Accion.boton("Círculo", GLFW.GLFW_KEY_X, Boton.A.mascara()),
+			Accion.boton("Cuadrado", GLFW.GLFW_KEY_C, Boton.Y.mascara()),
+			Accion.boton("Triángulo", GLFW.GLFW_KEY_V, Boton.X.mascara()),
+			Accion.boton("L", GLFW.GLFW_KEY_Q, Boton.L.mascara()),
+			Accion.boton("R", GLFW.GLFW_KEY_E, Boton.R.mascara()),
+			Accion.boton("Start", GLFW.GLFW_KEY_ENTER, Boton.START.mascara()),
+			Accion.boton("Start (2)", GLFW.GLFW_KEY_KP_ENTER, Boton.START.mascara()),
+			Accion.boton("Select", GLFW.GLFW_KEY_BACKSPACE, Boton.SELECT.mascara()),
+			Accion.palanca("Palanca arriba", GLFW.GLFW_KEY_W, 0, 0),
+			Accion.palanca("Palanca abajo", GLFW.GLFW_KEY_S, 0, 1),
+			Accion.palanca("Palanca izquierda", GLFW.GLFW_KEY_A, 0, 2),
+			Accion.palanca("Palanca derecha", GLFW.GLFW_KEY_D, 0, 3));
+
 	/** Palanca a fondo; con Shift, a la mitad (para caminar). */
 	static final int PALANCA_MAXIMA = 32767;
 
@@ -160,6 +181,7 @@ public final class Controles {
 			case PS2, PS3 -> PS;
 			case WII -> WII;
 			case N3DS -> N3DS;
+			case PSP -> PSP;
 			default -> GBA_NES;
 		};
 	}

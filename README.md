@@ -2,7 +2,7 @@
 
 **Creado por [Spar Retro](https://www.youtube.com/@sparretro)** · Mod de Fabric para **Minecraft Java 1.20.1**
 
-Juega **tus propios juegos** de Game Boy Advance, Nintendo 3DS, NES, Nintendo 64, PlayStation 2, PlayStation 3 y Wii **dentro de Minecraft**: consolas en 3D que el personaje sostiene con las dos manos, televisores con cable y control, y soporte para **joystick / gamepad**.
+Juega **tus propios juegos** de Game Boy Advance, Nintendo 3DS, PSP, NES, Nintendo 64, PlayStation 2, PlayStation 3 y Wii **dentro de Minecraft**: consolas en 3D que el personaje sostiene con las dos manos, televisores con cable y control, y soporte para **joystick / gamepad**.
 
 > **No incluye juegos, BIOS ni firmware**, y no descarga nada. Cargas tus propias copias desde el disco.
 
@@ -21,7 +21,7 @@ Por ahora funciona en **Windows de 64 bits** (los emuladores son programas nativ
 
 1. **Instala Fabric.** Descarga el instalador de [fabricmc.net/use/installer](https://fabricmc.net/use/installer/), ábrelo, elige **Minecraft 1.20.1** y toca **Instalar**. En el launcher de Minecraft aparece un perfil nuevo, **fabric-loader-1.20.1**.
 2. **Descarga Fabric API** para **1.20.1** desde [Modrinth](https://modrinth.com/mod/fabric-api/versions?g=1.20.1&l=fabric) (el archivo `fabric-api-0.92.x+1.20.1.jar`).
-3. **Descarga EmuMod**: entra a [**Releases**](https://github.com/Sparretro/EmuMod/releases/latest) y baja `emumod-2.0.0.jar`.
+3. **Descarga EmuMod**: entra a [**Releases**](https://github.com/Sparretro/EmuMod/releases/latest) y baja `emumod-2.1.0.jar`.
 4. **Copia los dos `.jar`** a la carpeta `mods` de Minecraft. Para abrirla, aprieta **Windows + R**, escribe `%appdata%\.minecraft\mods` y Enter (si no existe la carpeta `mods`, créala).
 5. **Abre el launcher**, elige el perfil **fabric-loader-1.20.1** y juega. Todo lo del mod está en la pestaña creativa **EmuMod**; en supervivencia se fabrica (recetas más abajo).
 6. Para jugar, **carga tus juegos** desde el botón **«Cargar juego»** de cada consola (tecla **O** para ver las opciones). Algunas consolas piden BIOS o firmware: mira [BIOS y firmware](#bios-y-firmware).
@@ -32,7 +32,7 @@ Si venías del mod **Televisor**, borra `televisor-1.0.0.jar`: tus BIOS, partida
 
 | Consola | ¿Necesita? | De dónde sale |
 |---|---|---|
-| NES, N64, 3DS, Wii | No | — |
+| NES, N64, 3DS, PSP, Wii | No | — |
 | GBA y GBA SP | Opcional | Funciona sin nada con la BIOS libre de [Cult-of-GBA](https://github.com/Cult-of-GBA/BIOS), que ya viene en el mod. Con la original (`gba_bios.bin`, 16 KB) algunos juegos andan mejor y aparece el logo al prender |
 | PlayStation 2 | **Sí** | La BIOS de **tu** PS2 (por ejemplo `scph39001.bin`, 4 MB) |
 | PlayStation 3 | **Sí** | El firmware oficial `PS3UPDAT.PUP`, **gratis en la página de Sony** |
@@ -52,6 +52,7 @@ Todo lo que eliges se copia a `.minecraft/config/emumod/sistema/` y se usa desde
 | **Game Boy Advance** | En las manos, delante de los ojos; se apoya en el piso, una mesa, la pared o el techo | SkyEmu |
 | **Game Boy Advance SP** | Igual que la GBA, abierta (mismo emulador y partidas que la GBA) | SkyEmu |
 | **Nintendo 3DS** | En las manos, abierta; la pantalla de abajo es táctil con el mouse | Citra |
+| **PSP** | En las manos, delante de los ojos; se apoya acostada | PPSSPP |
 | **NES** | Sentado frente a un televisor, con cable y control | QuickNES |
 | **Nintendo 64** | Igual que la NES | Mupen64Plus-Next |
 | **PlayStation 2** (clásica y Slim) | Igual que la NES; necesita tu BIOS | LRPS2 (PCSX2) |
@@ -60,20 +61,21 @@ Todo lo que eliges se copia a `.minecraft/config/emumod/sistema/` y se usa desde
 
 Mientras juegas, Minecraft esconde su interfaz (barra de inventario, vida, chat y mira), como con **F1**.
 
-### Consolas portátiles: GBA, GBA SP y 3DS
+### Consolas portátiles: GBA, GBA SP, 3DS y PSP
 
 | Consola | Receta (forma) |
 |---|---|
 | **Game Boy Advance** | `Hierro Panel Hierro` / `Botón Redst. Botón` / `Hierro Tinte violeta Hierro` |
 | **Game Boy Advance SP** | `Hierro Panel Hierro` / `Botón Redst. Botón` / `Tinte gris claro Hierro Tinte gris claro` |
 | **Nintendo 3DS** | `Hierro Panel Hierro` / `Botón Panel Botón` / `Hierro Tinte cian Hierro` |
+| **PSP** | `Hierro Panel Hierro` / `Botón Redst. Botón` / `Tinte negro Hierro Tinte negro` |
 
 (Panel = panel de vidrio, Botón = botón de piedra, Redst. = redstone.)
 
 - **Click derecho** con la consola en la mano: el personaje se la lleva a los ojos y juegas mirando su pantalla, con el mundo de fondo. **Esc** la baja.
 - **O** (configurable en *Opciones > Controles*, categoría *EmuMod*) muestra u oculta las opciones: cargar juego, BIOS, pausa, volumen, velocidad, estados, filtro y FOV. Sin juego cargado aparecen solas. Con la consola en la mano sin estar jugando, **O** la sube a los ojos con las opciones abiertas.
 - Los botones del modelo se hunden al apretarlos y **también se clickean con el mouse** (en la cruz puedes arrastrar para las diagonales).
-- **Shift + click derecho** sobre un bloque la **apoya** (la GBA acostada, en la pared o en el techo; la SP y la 3DS abiertas). Click derecho sobre la apoyada para jugar; rompiéndola la recuperas.
+- **Shift + click derecho** sobre un bloque la **apoya** (la GBA acostada, en la pared o en el techo; la SP y la 3DS abiertas; la PSP acostada). Click derecho sobre la apoyada para jugar; rompiéndola la recuperas.
 - **FOV**: se aplica mientras la consola está delante de los ojos; más chico = la consola se ve más grande.
 
 **GBA y SP.** Comparten el emulador con el bloque **Televisor**: el juego, la partida y los estados son los mismos. *(Opcional, recomendado)* toca **«BIOS: libre»** y elige tu `gba_bios.bin` (16 KB); sin ella se usa la BIOS libre de [Cult-of-GBA](https://github.com/Cult-of-GBA/BIOS), menos precisa. Filtros de pantalla:
@@ -85,6 +87,8 @@ Mientras juegas, Minecraft esconde su interfaz (barra de inventario, vida, chat 
 | **LCD de GBA** | Color GBA más la grilla de subpíxeles y las líneas del LCD (shader `lcd3x` de libretro) |
 
 **3DS.** Haz click (y arrastra) sobre la pantalla de abajo: es el stylus. La palanca circular se arrastra con el mouse. Carga juegos **desencriptados** (`.3ds`, `.cci`, `.cxi`, `.cia`) y programas caseros (`.3dsx`); no hace falta BIOS. Citra guarda su SD virtual y su NAND en `config/emumod/sistema/Citra/`.
+
+**PSP.** Carga imágenes de UMD (`.iso`, `.cso`, `.chd`), juegos `.pbp` y programas caseros (`.elf`, `.prx`). No hace falta BIOS ni firmware: PPSSPP emula el sistema de la PSP. Los botones del modelo se hunden y la palanca analógica se arrastra con el mouse. Las partidas de los juegos quedan en `config/emumod/sistema/PSP/SAVEDATA/`.
 
 ### Consolas de televisor: NES, N64, PS2, PS3 y Wii
 
@@ -139,7 +143,7 @@ Conecta un control **antes o durante** el juego (Xbox, PlayStation, Switch Pro y
 
 Los botones van **por posición**: el de abajo del gamepad (A en Xbox, ✕ en PlayStation) es el de abajo de la consola, y así con los cuatro.
 
-| Gamepad | GBA / SP / NES | 3DS | N64 | PS2 / PS3 | Wii (de costado) |
+| Gamepad | GBA / SP / NES | 3DS | N64 | PS2 / PS3 / PSP | Wii (de costado) |
 |---|---|---|---|---|---|
 | Botón de abajo | B | B | A | ✕ | 2 |
 | Botón de la derecha | A | A | C abajo | ◯ | A |
@@ -161,6 +165,7 @@ Los botones van **por posición**: el de abajo del gamepad (A en Xbox, ✕ en Pl
 | 3DS | Flechas = palanca circular (Shift = a la mitad), **X Z S A** = A B X Y, **Q / E** = L / R, **1 / 3** = ZL / ZR, **T F G H** = cruz, **Enter / Retroceso** = Start / Select |
 | N64 | Flechas = palanca (Shift = a la mitad), **Z / X** = A / B, **C** o **Espacio** = Z, **A / S** = L / R, **I J K L** = botones C, **T F G H** = cruz, **Enter** = Start |
 | PS2 / PS3 | Flechas = cruz, **W A S D** = palanca izquierda, **I J K L** = palanca derecha, **Z X C V** = ✕ ◯ □ △, **Q / E** = L1 / R1, **1 / 3** = L2 / R2, **N / M** = L3 / R3, **Enter / Retroceso** = Start / Select |
+| PSP | Flechas = cruz, **W A S D** = palanca analógica, **Z X C V** = ✕ ◯ □ △, **Q / E** = L / R, **Enter / Retroceso** = Start / Select |
 | Wii | Flechas = cruz, **Z / X** = 2 / 1, **C / V** = A / B, **Espacio** = sacudir, **Enter / Retroceso** = + / −, **H** = Home, **W A S D** = inclinar; el mouse es el puntero |
 
 **Esc** cierra la pantalla (el juego queda en pausa). Con el mouse también se aprietan los botones de los modelos y se arrastran las palancas.
@@ -198,14 +203,14 @@ emumod.zig=C:/ruta/a/zig.exe                            # no hace falta si zig e
 ./gradlew build
 ```
 
-El mod queda en `build/libs/emumod-2.0.0.jar`, con todos los emuladores adentro.
+El mod queda en `build/libs/emumod-2.1.0.jar`, con todos los emuladores adentro.
 
 | Tarea | Qué hace |
 |---|---|
 | `./gradlew runClient` | Minecraft de desarrollo con el mod |
 | `./gradlew runGametest` | Pruebas automáticas en un servidor sin ventana |
-| `./gradlew probarNucleo -Pbios=<ruta>`, `probarNes`, `probarN64`, `probarPs2 -Pbios=<ruta>`, `probarPs3 -Pfirmware=<ruta>`, `probarWii -Pjuego=<ruta>`, `probarN3ds` | Prueban cada emulador fuera de Minecraft (las de NES, N64 y 3DS con programas de prueba propios) |
-| `./gradlew runClientCaptura -PdevMundo=true [-PdevSolo=n3ds\|gba_sp]` | Crea un mundo y guarda capturas de las consolas en `run/screenshots/` |
+| `./gradlew probarNucleo -Pbios=<ruta>`, `probarNes`, `probarN64`, `probarPs2 -Pbios=<ruta>`, `probarPs3 -Pfirmware=<ruta>`, `probarWii -Pjuego=<ruta>`, `probarN3ds`, `probarPsp` | Prueban cada emulador fuera de Minecraft (las de NES, N64, 3DS y PSP con programas de prueba propios) |
+| `./gradlew runClientCaptura -PdevMundo=true [-PdevSolo=n3ds, gba_sp o psp]` | Crea un mundo y guarda capturas de las consolas en `run/screenshots/` |
 
 | Ruta | Contenido |
 |---|---|
@@ -235,6 +240,7 @@ Cada emulador es una DLL aparte que se carga en tiempo de ejecución por la API 
 | [RPCS3](https://github.com/WizzardSK/rpcs3-libretro) (PS3) | GPL-2.0 | `native/RPCS3` |
 | [Dolphin](https://github.com/libretro/dolphin) (Wii y GameCube) | GPL-2.0+ | [libretro/dolphin](https://github.com/libretro/dolphin) |
 | [Citra](https://github.com/libretro/citra) (3DS) | GPL-2.0 | [libretro/citra](https://github.com/libretro/citra), commit `a0483e9` |
+| [PPSSPP](https://github.com/hrydgard/ppsspp) (PSP) + sus archivos de sistema | GPL-2.0+ | [hrydgard/ppsspp](https://github.com/hrydgard/ppsspp), commit `09b8998` |
 | `libretro.h`, runtime de mingw-w64, `compiler_rt` de Zig | MIT / ZPL-2.1 / MIT | |
 
 ### Modelos 3D
@@ -246,6 +252,7 @@ Todos de [Sketchfab](https://sketchfab.com), convertidos con `tools/`. Hay que m
 | Game Boy Advance («Game Boy Retreat») | [ForkyForklift](https://sketchfab.com/ForkyForklift) | CC BY 4.0 |
 | Game Boy Advance SP («Gameboy Advance SP») | [Smoggybeard](https://sketchfab.com/Smoggybeard) | CC BY 4.0 |
 | Nintendo 3DS | [Broeach8972](https://sketchfab.com/Broeach8972) | CC BY 4.0 |
+| PSP («Sony PSP») | [Ilya Ostrovsky](https://sketchfab.com/strov) | CC BY 4.0 |
 | NES, control de NES, televisor CRT | [A.stark](https://sketchfab.com/a.stark), [donnichols](https://sketchfab.com/donnichols), [aut2](https://sketchfab.com/aut2) | CC BY 4.0 |
 | Televisor de plasma | [CN Entertainment](https://sketchfab.com/cn-entertainment) | CC BY 4.0 |
 | Nintendo 64 y su control | [Ethanboor](https://sketchfab.com/Ethanboor), [synthetic worlds](https://sketchfab.com/syntheticworlds) | CC BY 4.0 |
@@ -258,4 +265,4 @@ Los filtros de pantalla de GBA vienen de los shaders de dominio público de [lib
 
 ### Marcas, juegos y BIOS
 
-Game Boy, Game Boy Advance, Nintendo 3DS, NES, Nintendo 64, Wii y Nintendo son marcas de Nintendo; PlayStation es marca de Sony Interactive Entertainment. EmuMod no está afiliado a ninguna de las dos. Los juegos, BIOS y firmware tienen copyright de sus dueños: el mod no los incluye ni los descarga; usa solo copias que tengas derecho a usar.
+Game Boy, Game Boy Advance, Nintendo 3DS, NES, Nintendo 64, Wii y Nintendo son marcas de Nintendo; PlayStation y PSP son marcas de Sony Interactive Entertainment. EmuMod no está afiliado a ninguna de las dos. Los juegos, BIOS y firmware tienen copyright de sus dueños: el mod no los incluye ni los descarga; usa solo copias que tengas derecho a usar.
