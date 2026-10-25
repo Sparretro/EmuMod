@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"WQW",
+		"WRW",
+		"WIW"
+	],
+	"key": {
+		"W": { "item": "minecraft:white_dye" },
+		"Q": { "item": "minecraft:quartz" },
+		"R": { "item": "minecraft:redstone" },
+		"I": { "item": "minecraft:iron_ingot" }
+	},
+	"result": {
+		"item": "emumod:wii"
+	}
+}

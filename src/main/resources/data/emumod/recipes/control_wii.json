@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"WBW",
+		"WRW",
+		"WQW"
+	],
+	"key": {
+		"W": { "item": "minecraft:white_dye" },
+		"B": { "item": "minecraft:stone_button" },
+		"R": { "item": "minecraft:redstone" },
+		"Q": { "item": "minecraft:quartz" }
+	},
+	"result": {
+		"item": "emumod:control_wii"
+	}
+}

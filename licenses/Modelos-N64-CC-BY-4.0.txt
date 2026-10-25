@@ -1,0 +1,17 @@
+Modelos 3D de la Nintendo 64 y su control
+
+Los dos se distribuyen bajo Creative Commons Atribución 4.0 Internacional (CC BY 4.0):
+https://creativecommons.org/licenses/by/4.0/
+
+- "Nintendo 64" por Ethanboor (https://sketchfab.com/Ethanboor)
+  https://sketchfab.com/3d-models/nintendo-64-816d53eca00e4f3192a8d23f62388472
+  En el mod: modelos/n64.bin y textures/modelo/n64/
+
+- "Nintendo 64 Controller" por synthetic worlds (https://sketchfab.com/syntheticworlds)
+  https://sketchfab.com/3d-models/nintendo-64-controller-0cec163531b5428a8b77114314364712
+  En el mod: modelos/control_n64.bin y textures/modelo/control_n64/
+
+Cambios hechos para el mod (tools/ConvertirModelo.java): se pasaron de GLB a un formato binario propio con las
+transformaciones de los nodos aplicadas, las texturas se achicaron a 1024 px como máximo y no se usan los mapas de
+normales, rugosidad ni metal. De la consola se quitaron el control, su cable y el cable de corriente que venían en el
+mismo modelo (el mod dibuja sus propios cables). En el juego, los botones apretados del control se marcan con una sombra.

@@ -1,0 +1,8 @@
+Núcleo de Wii y GameCube: Dolphin para libretro
+
+natives/windows-x64/dolphin_libretro.dll es el núcleo libretro de Dolphin, sin modificar, del buildbot oficial de
+libretro (https://buildbot.libretro.com/nightly/windows/x86_64/latest/dolphin_libretro.dll.zip, descargado el
+2026-10-23, SHA-256 del zip 3b4bc60377f4bcfa5e0784b24cc453bb88acb7f33c28bc3a327224b15f314a86).
+Licencia: GNU GPL versión 2 o posterior. Código fuente: https://github.com/libretro/dolphin (commit
+3aac3f052f733f8df2f1616843a4d2e14002ed11, el más nuevo al bajar la DLL). El mod la carga en tiempo de ejecución a través
+de su puente propio (native/puente), que le da un contexto OpenGL y le habla solo por la API libretro.

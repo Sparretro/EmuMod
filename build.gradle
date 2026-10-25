@@ -1,0 +1,416 @@
+plugins {
+	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
+	id 'maven-publish'
+}
+
+repositories {
+	// Add repositories to retrieve artifacts from in here.
+	// You should only use this when depending on other mods because
+	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
+	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
+	// for more information about repositories.
+}
+
+sourceSets {
+	// Pruebas automáticas en un servidor headless; no se incluyen en el jar del mod
+	gametest {
+		compileClasspath += main.compileClasspath + main.output
+		runtimeClasspath += main.runtimeClasspath + main.output
+	}
+}
+
+loom {
+	splitEnvironmentSourceSets()
+
+	accessWidenerPath = file("src/main/resources/emumod.accesswidener")
+
+	mods {
+		"emumod" {
+			sourceSet sourceSets.main
+			sourceSet sourceSets.client
+		}
+	}
+
+	runs {
+		// Abre la pantalla del televisor, guarda run/screenshots/televisor_dev.png y cierra
+		clientCaptura {
+			client()
+			name "Client (captura)"
+			vmArg "-Demumod.dev.captura=true"
+			vmArg "-Demumod.dev.rom=${providers.gradleProperty("devRom").getOrElse("vacio")}"
+			vmArg "-Demumod.dev.velocidad=${providers.gradleProperty("devVelocidad").getOrElse("1")}"
+			vmArg "-Demumod.dev.estados=${providers.gradleProperty("devEstados").getOrElse("false")}"
+			vmArg "-Demumod.dev.pausa=${providers.gradleProperty("devPausa").getOrElse("false")}"
+			vmArg "-Demumod.dev.consola=${providers.gradleProperty("devConsola").getOrElse("")}"
+			vmArg "-Demumod.dev.botones=${providers.gradleProperty("devBotones").getOrElse("0")}"
+			vmArg "-Demumod.dev.mundo=${providers.gradleProperty("devMundo").getOrElse("false")}"
+			vmArg "-Demumod.dev.filtro=${providers.gradleProperty("devFiltro").getOrElse("ORIGINAL")}"
+			vmArg "-Demumod.dev.bios_ps2=${providers.gradleProperty("devBiosPs2").getOrElse("")}"
+			vmArg "-Demumod.dev.juego_wii=${providers.gradleProperty("devJuegoWii").getOrElse("")}"
+			vmArg "-Demumod.dev.solo=${providers.gradleProperty("devSolo").getOrElse("")}"
+			vmArg "-Demumod.dev.juego_doble=${providers.gradleProperty("devJuegoDoble").getOrElse("")}"
+		}
+
+		gametest {
+			server()
+			name "Game Test"
+			vmArg "-Dfabric-api.gametest"
+			vmArg "-Dfabric-api.gametest.report-file=${project.layout.buildDirectory.get()}/gametest/junit.xml"
+			runDir "build/gametest"
+			source sourceSets.gametest
+		}
+	}
+}
+
+dependencies {
+	// To change the versions see the gradle.properties file
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings loom.officialMojangMappings()
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+	// Fabric API. This is technically optional, but you probably want it anyway.
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+}
+
+processResources {
+	def version = project.version
+	inputs.property "version", version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 17
+}
+
+java {
+	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
+	// if it is present.
+	// If you remove this line, sources will not be generated.
+	withSourcesJar()
+
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+}
+
+jar {
+	def projectName = project.name
+	inputs.property "projectName", projectName
+
+	from("LICENSE") {
+		rename { "${it}_$projectName"}
+	}
+	// Avisos de licencia del código de terceros que va dentro de la DLL del núcleo
+	from("licenses") {
+		into "licenses"
+	}
+}
+
+// configure the maven publication
+publishing {
+	publications {
+		create("mavenJava", MavenPublication) {
+			from components.java
+		}
+	}
+
+	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+	repositories {
+		// Add repositories to publish to here.
+		// Notice: This block does NOT have the same function as the block in the top level.
+		// The repositories here will be used for publishing your artifact, not for
+		// retrieving dependencies.
+	}
+}
+
+// El juego de desarrollo corre con Java 17 aunque Gradle use Java 25
+tasks.withType(net.fabricmc.loom.task.AbstractRunTask).configureEach {
+	javaLauncher = javaToolchains.launcherFor {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+// ---- Núcleo de GBA: SkyEmu (MIT), compilado sin modificar desde el submódulo native/SkyEmu ----
+// Se compila con zig cc, que trae sus propios headers de C y no necesita Visual Studio ni el Windows SDK.
+def zig = providers.gradleProperty("emumod.zig").orElse("zig")
+def commitSkyEmu = providers.exec {
+	commandLine "git", "-C", "native/SkyEmu", "rev-parse", "--short", "HEAD"
+}.standardOutput.asText.map { it.trim() }
+
+def compilarNucleo = tasks.register("compilarNucleo", Exec) {
+	description = "Compila el núcleo libretro de SkyEmu como DLL para Windows x64"
+	def fuentes = layout.projectDirectory.dir("native/SkyEmu/src")
+	def salida = layout.buildDirectory.dir("nativos")
+	inputs.files(fileTree(fuentes) { include "*.h", "libretro.c", "shared.c", "localization.c" })
+	inputs.property("zig", zig)
+	inputs.property("commit", commitSkyEmu)
+	outputs.dir(salida)
+
+	def dll = salida.map { it.file("natives/windows-x64/skyemu_libretro.dll").asFile }
+	doFirst { dll.get().parentFile.mkdirs() }
+	executable = zig.get()
+	args "cc", "-target", "x86_64-windows-gnu", "-O3", "-std=c11", "-shared", "-fno-sanitize=all", "-w",
+			// ProcessBuilder no escapa comillas en Windows: \" llega como comilla literal al compilador
+			"-DSE_PLATFORM_WINDOWS=1", "-DUSE_SDL=1",
+			"-DGIT_COMMIT_HASH=\\\"${commitSkyEmu.get()}\\\"", "-DGIT_BRANCH=\\\"main\\\"", "-DGIT_TAG=\\\"${commitSkyEmu.get()}\\\"",
+			"-o", dll.get().path,
+			fuentes.file("libretro.c").asFile.path, fuentes.file("shared.c").asFile.path, fuentes.file("localization.c").asFile.path
+}
+
+// ---- Núcleo de NES: QuickNES (emulador LGPL-2.1, adaptador libretro GPL-2), sin modificar desde native/QuickNES ----
+def commitQuickNes = providers.exec {
+	commandLine "git", "-C", "native/QuickNES", "rev-parse", "--short", "HEAD"
+}.standardOutput.asText.map { it.trim() }
+
+def compilarNucleoNes = tasks.register("compilarNucleoNes", Exec) {
+	description = "Compila el núcleo libretro de QuickNES como DLL para Windows x64"
+	def raiz = layout.projectDirectory.dir("native/QuickNES")
+	// Las mismas fuentes que lista Makefile.common del núcleo
+	def fuentes = ["libretro/libretro.cpp"] + fileTree(raiz.dir("nes_emu")) { include "*.cpp" }.files.collect { "nes_emu/" + it.name }.sort()
+	inputs.files(fileTree(raiz) { include "libretro/**", "nes_emu/**" })
+	inputs.property("zig", zig)
+	inputs.property("commit", commitQuickNes)
+	def salida = layout.buildDirectory.dir("nativosNes")
+	outputs.dir(salida)
+
+	def dll = salida.map { it.file("natives/windows-x64/quicknes_libretro.dll").asFile }
+	doFirst { dll.get().parentFile.mkdirs() }
+	workingDir raiz.asFile
+	executable = zig.get()
+	args(["c++", "-target", "x86_64-windows-gnu", "-O2", "-std=gnu++11", "-shared", "-fno-sanitize=all", "-w",
+			"-DNDEBUG", "-D__LIBRETRO__",
+			"-I.", "-Ines_emu", "-Ilibretro", "-Ilibretro/libretro-common/include",
+			"-o", dll.get().path] + fuentes)
+}
+
+
+// ---- Núcleo de N64: Mupen64Plus-Next (GPL-2), DLL oficial ya compilada por el buildbot de libretro ----
+// Compilarlo acá pediría NASM y los headers de OpenGL; se usa la DLL nightly del commit que está en el submódulo
+// native/Mupen64PlusNext (su código fuente exacto) y se verifica que sea la misma que se bajó
+def extraerNucleoN64 = tasks.register("extraerNucleoN64", Copy) {
+	description = "Extrae la DLL de Mupen64Plus-Next (buildbot de libretro) para Windows x64"
+	def zip = layout.projectDirectory.file("native/Mupen64PlusNext-win64/mupen64plus_next_libretro.dll.zip")
+	inputs.file(zip)
+	doFirst {
+		def hash = java.security.MessageDigest.getInstance("SHA-256").digest(zip.asFile.bytes).encodeHex().toString()
+		if (hash != "6ba65e218eddd0cbebdbf0d5e81a5c739b0d4e932a2091d10134e6da123a8b01") {
+			throw new GradleException("La DLL de Mupen64Plus-Next no es la esperada (SHA-256 ${hash})")
+		}
+	}
+	from(zipTree(zip)) {
+		include "mupen64plus_next_libretro.dll"
+		into "natives/windows-x64"
+	}
+	into layout.buildDirectory.dir("nativosN64")
+}
+// ---- Núcleo de PS2: LRPS2 (PCSX2 de libretro, GPL-3), DLL oficial ya compilada por el buildbot de libretro ----
+// Compilar PCSX2 pide CMake, Visual Studio o MinGW completo; se usa la DLL nightly del commit que está en el submódulo
+// native/LRPS2 (su código fuente exacto) y se verifica que sea la misma que se bajó
+def extraerNucleoPs2 = tasks.register("extraerNucleoPs2", Copy) {
+	description = "Extrae la DLL de LRPS2 (buildbot de libretro) para Windows x64"
+	def zip = layout.projectDirectory.file("native/LRPS2-win64/pcsx2_libretro.dll.zip")
+	inputs.file(zip)
+	doFirst {
+		def hash = java.security.MessageDigest.getInstance("SHA-256").digest(zip.asFile.bytes).encodeHex().toString()
+		if (hash != "61bf273f9688698cedde9d9efe9d3afabddc36632babe24ee7345357f5e22a51") {
+			throw new GradleException("La DLL de LRPS2 no es la esperada (SHA-256 ${hash})")
+		}
+	}
+	from(zipTree(zip)) {
+		include "pcsx2_libretro.dll"
+		into "natives/windows-x64"
+	}
+	into layout.buildDirectory.dir("nativosPs2")
+}
+// ---- Núcleo de PS3: RPCS3 para libretro (GPL-2), DLL oficial ya compilada por el buildbot de libretro ----
+// Compilar RPCS3 pide LLVM, Qt y Visual Studio; se usa la DLL nightly (v0.0.43-20243, núcleo a823329) y se verifica
+def extraerNucleoPs3 = tasks.register("extraerNucleoPs3", Copy) {
+	description = "Extrae la DLL de RPCS3 (buildbot de libretro) para Windows x64"
+	def zip = layout.projectDirectory.file("native/RPCS3-win64/rpcs3_libretro.dll.zip")
+	inputs.file(zip)
+	doFirst {
+		def hash = java.security.MessageDigest.getInstance("SHA-256").digest(zip.asFile.bytes).encodeHex().toString()
+		if (hash != "1be42d1528054ad76545bf7e518227495a47448454a8088fe7554ddf48cffd37") {
+			throw new GradleException("La DLL de RPCS3 no es la esperada (SHA-256 ${hash})")
+		}
+	}
+	from(zipTree(zip)) {
+		include "rpcs3_libretro.dll"
+		into "natives/windows-x64"
+	}
+	into layout.buildDirectory.dir("nativosPs3")
+}
+
+// ---- Núcleo de Wii y GameCube: Dolphin para libretro (GPL-2), DLL oficial del buildbot de libretro ----
+// Compilar Dolphin pide CMake y Visual Studio; se usa la DLL nightly y se verifica
+def extraerNucleoWii = tasks.register("extraerNucleoWii", Copy) {
+	description = "Extrae la DLL de Dolphin (buildbot de libretro) para Windows x64"
+	def zip = layout.projectDirectory.file("native/Dolphin-win64/dolphin_libretro.dll.zip")
+	inputs.file(zip)
+	doFirst {
+		def hash = java.security.MessageDigest.getInstance("SHA-256").digest(zip.asFile.bytes).encodeHex().toString()
+		if (hash != "3b4bc60377f4bcfa5e0784b24cc453bb88acb7f33c28bc3a327224b15f314a86") {
+			throw new GradleException("La DLL de RPCS3 no es la esperada (SHA-256 ${hash})")
+		}
+	}
+	from(zipTree(zip)) {
+		include "dolphin_libretro.dll"
+		into "natives/windows-x64"
+	}
+	into layout.buildDirectory.dir("nativosWii")
+}
+
+// ---- Núcleo de 3DS: Citra para libretro (GPL-2), DLL oficial del buildbot de libretro ----
+// Compilar Citra pide CMake y Visual Studio; se usa la DLL nightly y se verifica
+def extraerNucleo3ds = tasks.register("extraerNucleo3ds", Copy) {
+	description = "Extrae la DLL de Citra (buildbot de libretro) para Windows x64"
+	def zip = layout.projectDirectory.file("native/Citra-win64/citra_libretro.dll.zip")
+	inputs.file(zip)
+	doFirst {
+		def hash = java.security.MessageDigest.getInstance("SHA-256").digest(zip.asFile.bytes).encodeHex().toString()
+		if (hash != "d5c9f086903f73cf754c73de2b5897e92a8e28af11b7eab8c8b38eb12ed9e1ed") {
+			throw new GradleException("La DLL de Citra no es la esperada (SHA-256 ${hash})")
+		}
+	}
+	from(zipTree(zip)) {
+		include "citra_libretro.dll"
+		into "natives/windows-x64"
+	}
+	into layout.buildDirectory.dir("nativos3ds")
+}
+
+// Puente propio (native/puente) entre Java y el núcleo de N64: atiende los callbacks que el núcleo hace desde su corrutina
+def compilarPuente = tasks.register("compilarPuente", Exec) {
+	description = "Compila el puente libretro del mod como DLL para Windows x64"
+	def fuente = layout.projectDirectory.file("native/puente/libretro_puente.c")
+	def gl = layout.projectDirectory.file("native/puente/contexto_gl.c")
+	inputs.files(fuente, gl, layout.projectDirectory.file("native/puente/contexto_gl.h"))
+	inputs.property("zig", zig)
+	def salida = layout.buildDirectory.dir("nativosPuente")
+	outputs.dir(salida)
+
+	def dll = salida.map { it.file("natives/windows-x64/libretro_puente.dll").asFile }
+	doFirst { dll.get().parentFile.mkdirs() }
+	executable = zig.get()
+	args "cc", "-target", "x86_64-windows-gnu", "-O2", "-std=c11", "-shared", "-fno-sanitize=all", "-Wall", "-Wno-format-security",
+			"-o", dll.get().path, fuente.asFile.path, gl.asFile.path, "-lopengl32", "-lgdi32", "-luser32"
+}
+
+processClientResources {
+	// zig también genera .lib y .pdb; al mod solo le hace falta la DLL
+	from(compilarNucleo) {
+		include "**/*.dll"
+	}
+	from(compilarNucleoNes) {
+		include "**/*.dll"
+	}
+	from(extraerNucleoN64)
+	from(extraerNucleoPs2)
+	from(extraerNucleoPs3)
+	from(extraerNucleoWii)
+	from(extraerNucleo3ds)
+	from(compilarPuente) {
+		include "**/*.dll"
+	}
+}
+
+// Prueba headless del núcleo, fuera de Minecraft: ./gradlew probarNucleo -Pbios=<ruta a gba_bios.bin>
+sourceSets {
+	pruebasNucleo {
+		compileClasspath += client.compileClasspath + client.output + main.output
+		runtimeClasspath += client.runtimeClasspath + client.output + main.output
+	}
+}
+
+tasks.register("probarNes", JavaExec) {
+	description = "Corre una ROM de prueba propia en el núcleo de NES y guarda la captura en build/pruebas-nes"
+	classpath = sourceSets.pruebasNucleo.runtimeClasspath
+	mainClass = "com.emumod.pruebas.PruebaNes"
+	javaLauncher = javaToolchains.launcherFor {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+	args layout.buildDirectory.dir("pruebas-nes").get().asFile.path
+}
+
+tasks.register("probarN64", JavaExec) {
+	description = "Corre una ROM de prueba propia en el núcleo de N64 y guarda la captura en build/pruebas-n64"
+	classpath = sourceSets.pruebasNucleo.runtimeClasspath
+	mainClass = "com.emumod.pruebas.PruebaN64"
+	jvmArgs "-Demumod.depurar=true"
+	javaLauncher = javaToolchains.launcherFor {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+	args layout.buildDirectory.dir("pruebas-n64").get().asFile.path
+}
+
+tasks.register("probarPs2", JavaExec) {
+	description = "Arranca la BIOS de PS2 indicada sin disco y guarda capturas en build/pruebas-ps2"
+	classpath = sourceSets.pruebasNucleo.runtimeClasspath
+	mainClass = "com.emumod.pruebas.PruebaPs2"
+	javaLauncher = javaToolchains.launcherFor {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+	jvmArgs "-Demumod.depurar=true"
+	def bios = providers.gradleProperty("bios").orElse("")
+	def juego = providers.gradleProperty("juego").orElse("")
+	def opciones = providers.gradleProperty("opciones").orElse("")
+	// -Popciones=clave=valor,clave=valor (opciones del núcleo, para comparar velocidades)
+	opciones.get().split(",").findAll { it.contains("=") }.each { jvmArgs "-Demumod.opcion.$it" }
+	systemProperty "emumod.cuadros", providers.gradleProperty("cuadros").getOrElse("900")
+	args layout.buildDirectory.dir("pruebas-ps2").get().asFile.path, bios.get(), juego.get()
+}
+
+tasks.register("probarPs3", JavaExec) {
+	description = "Instala el firmware de PS3 indicado y arranca el menú de la consola (o un juego); capturas en build/pruebas-ps3"
+	classpath = sourceSets.pruebasNucleo.runtimeClasspath
+	mainClass = "com.emumod.pruebas.PruebaPs3"
+	javaLauncher = javaToolchains.launcherFor {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+	jvmArgs "-Demumod.depurar=true"
+	// -Pjvm="-Xmx4096m ..." para probar con la memoria que le da el launcher a Minecraft; -Psalida=<carpeta> cambia la de la prueba
+	providers.gradleProperty("jvm").getOrElse("").split(" ").findAll { !it.isEmpty() }.each { jvmArgs it }
+	systemProperty "emumod.cuadros", providers.gradleProperty("cuadros").getOrElse("1200")
+	args providers.gradleProperty("salida").getOrElse(layout.buildDirectory.dir("pruebas-ps3").get().asFile.path), providers.gradleProperty("firmware").getOrElse(""),
+			providers.gradleProperty("juego").getOrElse("")
+}
+
+tasks.register("probarWii", JavaExec) {
+	description = "Carga un juego de Wii en Dolphin (contexto OpenGL del puente) y guarda capturas en build/pruebas-wii"
+	classpath = sourceSets.pruebasNucleo.runtimeClasspath
+	mainClass = "com.emumod.pruebas.PruebaWii"
+	javaLauncher = javaToolchains.launcherFor {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+	jvmArgs "-Demumod.depurar=true"
+	systemProperty "emumod.cuadros", providers.gradleProperty("cuadros").getOrElse("1800")
+	args layout.buildDirectory.dir("pruebas-wii").get().asFile.path, providers.gradleProperty("juego").getOrElse("")
+}
+
+tasks.register("probarN3ds", JavaExec) {
+	description = "Corre el programa de prueba propio de 3DS (o el juego indicado) en Citra; capturas en build/pruebas-3ds"
+	classpath = sourceSets.pruebasNucleo.runtimeClasspath
+	mainClass = "com.emumod.pruebas.PruebaDosPantallas"
+	javaLauncher = javaToolchains.launcherFor {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+	jvmArgs "-Demumod.depurar=true"
+	// 0: los que hagan falta según el juego (400 con el programa de prueba)
+	systemProperty "emumod.cuadros", providers.gradleProperty("cuadros").getOrElse("0")
+	args layout.buildDirectory.dir("pruebas-3ds").get().asFile.path,
+			providers.gradleProperty("juego").getOrElse(layout.projectDirectory.file("native/prueba3ds/prueba3ds.3dsx").asFile.path), "N3DS"
+}
+
+tasks.register("probarNucleo", JavaExec) {
+	description = "Arranca el núcleo con la BIOS indicada y guarda capturas en build/pruebas-nucleo"
+	classpath = sourceSets.pruebasNucleo.runtimeClasspath
+	mainClass = "com.emumod.pruebas.PruebaNucleo"
+	javaLauncher = javaToolchains.launcherFor {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+	def salida = layout.buildDirectory.dir("pruebas-nucleo")
+	def bios = providers.gradleProperty("bios").orElse("")
+	args salida.get().asFile.path, bios.get()
+}

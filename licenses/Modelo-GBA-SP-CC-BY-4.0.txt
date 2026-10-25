@@ -1,0 +1,13 @@
+Modelo 3D de la Game Boy Advance SP
+
+"Gameboy Advance SP" por Smoggybeard
+https://sketchfab.com/3d-models/gameboy-advance-sp-b79bb731b6b844fd8c61bee31e26a323
+Autor: https://sketchfab.com/Smoggybeard
+Licencia: Creative Commons Atribución 4.0 Internacional (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/
+
+Cambios hechos para EmuMod (tools/ConvertirModelo.java): se pasó del formato GLB a un formato binario propio
+(assets/emumod/modelos/gba_sp.bin) con la malla simplificada y las texturas achicadas a 512x512; se quitaron el
+cartucho y su etiqueta, y el vidrio de la pantalla; la imagen de la pantalla se reemplazó por negro; las piezas de
+los botones se separaron para que cada uno se hunda solo. No se usan los mapas de normales, rugosidad ni emisivo.
+En el juego, la pantalla muestra el juego emulado.

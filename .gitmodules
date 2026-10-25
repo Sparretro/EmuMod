@@ -1,0 +1,17 @@
+[submodule "native/SkyEmu"]
+	path = native/SkyEmu
+	url = https://github.com/skylersaleh/SkyEmu.git
+[submodule "native/QuickNES"]
+	path = native/QuickNES
+	url = https://github.com/libretro/QuickNES_Core.git
+[submodule "native/Mupen64PlusNext"]
+	path = native/Mupen64PlusNext
+	url = https://github.com/libretro/mupen64plus-libretro-nx.git
+[submodule "native/LRPS2"]
+	path = native/LRPS2
+	url = https://github.com/libretro/ps2.git
+	shallow = true
+[submodule "native/RPCS3"]
+	path = native/RPCS3
+	url = https://github.com/WizzardSK/rpcs3-libretro.git
+	shallow = true

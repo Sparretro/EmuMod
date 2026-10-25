@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		" S ",
+		"BRB",
+		"KIK"
+	],
+	"key": {
+		"S": { "item": "minecraft:string" },
+		"B": { "item": "minecraft:stone_button" },
+		"R": { "item": "minecraft:redstone" },
+		"I": { "item": "minecraft:iron_ingot" },
+		"K": { "item": "minecraft:black_dye" }
+	},
+	"result": {
+		"item": "emumod:control_ps2"
+	}
+}

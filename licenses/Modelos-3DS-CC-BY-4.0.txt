@@ -1,0 +1,8 @@
+Modelo 3D de la Nintendo 3DS
+
+- "Nintendo 3DS" por Broeach8972 (https://sketchfab.com/Broeach8972)
+  https://sketchfab.com/3d-models/nintendo-3ds-3409850b12cb4b4ea662784e1d78eab7
+  Licencia: Creative Commons Atribución 4.0 (CC BY 4.0): https://creativecommons.org/licenses/by/4.0/
+  En el mod: modelos/n3ds.bin y textures/modelo/n3ds/
+
+Cambios (tools/ConvertirModelo.java): pasado a un formato binario propio y sin las piezas repetidas que traía el GLB.

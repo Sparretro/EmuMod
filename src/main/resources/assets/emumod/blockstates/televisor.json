@@ -1,0 +1,8 @@
+{
+	"variants": {
+		"facing=north": { "model": "emumod:block/televisor" },
+		"facing=east": { "model": "emumod:block/televisor", "y": 90 },
+		"facing=south": { "model": "emumod:block/televisor", "y": 180 },
+		"facing=west": { "model": "emumod:block/televisor", "y": 270 }
+	}
+}

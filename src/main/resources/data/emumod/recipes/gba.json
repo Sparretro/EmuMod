@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"IGI",
+		"BRB",
+		"IDI"
+	],
+	"key": {
+		"I": { "item": "minecraft:iron_ingot" },
+		"G": { "item": "minecraft:glass_pane" },
+		"B": { "item": "minecraft:stone_button" },
+		"R": { "item": "minecraft:redstone" },
+		"D": { "item": "minecraft:purple_dye" }
+	},
+	"result": {
+		"item": "emumod:gba"
+	}
+}

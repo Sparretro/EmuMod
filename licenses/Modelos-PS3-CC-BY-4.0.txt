@@ -1,0 +1,21 @@
+Modelos 3D de la PlayStation 3 (clásica y Slim) y su control
+
+Los tres se distribuyen bajo Creative Commons Atribución 4.0 Internacional (CC BY 4.0):
+https://creativecommons.org/licenses/by/4.0/
+
+- "classic ps3" por jei3323 (https://sketchfab.com/jei3323)
+  https://sketchfab.com/3d-models/classic-ps3-7c3e84e5bf514bd1be45788f74dc3d1f
+  En el mod: modelos/ps3.bin y textures/modelo/ps3/
+
+- "PS3 Slim" por Vasily (https://sketchfab.com/3D-Models-Geek)
+  https://sketchfab.com/3d-models/ps3-slim-2341abe39eb74249b6e5869d0f740f84
+  En el mod: modelos/ps3_slim.bin
+
+- "Ps3 Controller" por DarkFire (https://sketchfab.com/vlakas)
+  https://sketchfab.com/3d-models/ps3-controller-d3f2431b849340b98871f1dabc531941
+  En el mod: modelos/control_ps3.bin
+
+Cambios hechos para el mod (tools/ConvertirModelo.java): se pasaron de GLB a un formato binario propio con las
+transformaciones de los nodos aplicadas y sin los mapas de normales, rugosidad ni metal. El control se giró para que
+quede con los botones hacia arriba (venía con z hacia arriba). En el juego, los botones apretados del control se marcan
+con una sombra.

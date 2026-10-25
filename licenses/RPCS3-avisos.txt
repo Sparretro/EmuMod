@@ -1,0 +1,19 @@
+Núcleo de PlayStation 3: RPCS3 para libretro
+
+El archivo natives/windows-x64/rpcs3_libretro.dll es el núcleo libretro de RPCS3 (v0.0.43-20243), sin modificar, tal
+como lo compila el buildbot oficial de libretro:
+  https://buildbot.libretro.com/nightly/windows/x86_64/latest/rpcs3_libretro.dll.zip
+  (descargado el 2026-10-23, SHA-256 del zip 1be42d1528054ad76545bf7e518227495a47448454a8088fe7554ddf48cffd37)
+
+Se distribuye bajo la GNU General Public License versión 2 (ver RPCS3-GPL-2.0.txt).
+
+Código fuente correspondiente: https://github.com/WizzardSK/rpcs3-libretro (port de https://github.com/RPCS3/rpcs3)
+  commit a823329f4f2aaa0cf4bee5fe8480604e3112fa85 (el que figura dentro de la DLL)
+El repositorio del mod lo incluye como submódulo en native/RPCS3, en ese mismo commit.
+
+La DLL contiene RPCS3 (GPL-2) y las bibliotecas de terceros de native/RPCS3/3rdparty, cada una con su licencia y avisos
+en su carpeta (entre otras LLVM, asmjit, glslang, FFmpeg, SoundTouch, wolfSSL, curl, libpng, libusb, pugixml, yaml-cpp,
+zlib y zstd), además de libretro-common.
+
+El mod no la enlaza: la carga en tiempo de ejecución a través de su puente propio (libretro_puente.dll, código del mod
+en native/puente) y le habla solo por la API libretro. No incluye el firmware de PS3: cada jugador elige el suyo.

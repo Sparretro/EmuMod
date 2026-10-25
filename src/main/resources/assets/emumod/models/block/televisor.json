@@ -1,0 +1,8 @@
+{
+	"parent": "minecraft:block/orientable",
+	"textures": {
+		"top": "emumod:block/televisor_top",
+		"front": "emumod:block/televisor_front",
+		"side": "emumod:block/televisor_side"
+	}
+}

@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		" S ",
+		"BRB",
+		"III"
+	],
+	"key": {
+		"S": { "item": "minecraft:string" },
+		"B": { "item": "minecraft:stone_button" },
+		"R": { "item": "minecraft:redstone" },
+		"I": { "item": "minecraft:iron_ingot" }
+	},
+	"result": {
+		"item": "emumod:control_nes"
+	}
+}

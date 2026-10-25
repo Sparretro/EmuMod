@@ -1,0 +1,15 @@
+{
+	"schemaVersion": 1,
+	"id": "emumod-gametest",
+	"version": "1.0.0",
+	"name": "EmuMod GameTests",
+	"environment": "*",
+	"entrypoints": {
+		"fabric-gametest": [
+			"com.emumod.test.TelevisorGameTests"
+		]
+	},
+	"depends": {
+		"emumod": "*"
+	}
+}

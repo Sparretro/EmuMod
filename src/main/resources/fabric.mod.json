@@ -1,0 +1,44 @@
+{
+	"schemaVersion": 1,
+	"id": "emumod",
+	"version": "${version}",
+	"name": "EmuMod",
+	"description": "Juega tus propios juegos de GBA, 3DS, NES, N64, PS2, PS3 y Wii dentro de Minecraft: consolas en 3D, televisores y soporte para joystick.",
+	"authors": [
+		{
+			"name": "Spar Retro",
+			"contact": {
+				"homepage": "https://www.youtube.com/@sparretro"
+			}
+		}
+	],
+	"contact": {
+		"homepage": "https://www.youtube.com/@sparretro",
+		"sources": "https://github.com/Sparretro/EmuMod",
+		"issues": "https://github.com/Sparretro/EmuMod/issues"
+	},
+	"license": "MIT",
+	"icon": "assets/emumod/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.emumod.EmuMod"
+		],
+		"client": [
+			"com.emumod.client.EmuModClient"
+		]
+	},
+	"accessWidener": "emumod.accesswidener",
+	"mixins": [
+		{
+			"config": "emumod.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*"
+	}
+}

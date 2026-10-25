@@ -1,0 +1,16 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"KRK",
+		"III"
+	],
+	"key": {
+		"K": { "item": "minecraft:black_dye" },
+		"I": { "item": "minecraft:iron_ingot" },
+		"R": { "item": "minecraft:redstone" }
+	},
+	"result": {
+		"item": "emumod:ps2_slim"
+	}
+}

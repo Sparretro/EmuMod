@@ -1,0 +1,12 @@
+Núcleo de Nintendo 3DS: Citra para libretro
+
+natives/windows-x64/citra_libretro.dll es el núcleo libretro de Citra, sin modificar, del buildbot oficial de
+libretro (https://buildbot.libretro.com/nightly/windows/x86_64/latest/citra_libretro.dll.zip, descargado el
+2026-10-24, SHA-256 del zip d5c9f086903f73cf754c73de2b5897e92a8e28af11b7eab8c8b38eb12ed9e1ed).
+Licencia: GNU GPL versión 2 o posterior (ver Citra-GPL-2.0.txt). Código fuente: https://github.com/libretro/citra
+(commit a0483e9abe8134ae6b290cdca7d49cb77689f05b, el más nuevo al bajar la DLL). Incluye bibliotecas de terceros con sus
+propias licencias compatibles (ver la carpeta externals/ del código fuente). El mod la carga en tiempo de ejecución a
+través de su puente propio (native/puente), que le da un contexto OpenGL y le habla solo por la API libretro.
+
+No incluye juegos, firmware ni archivos de sistema de la 3DS: los juegos son del jugador y tienen que estar
+desencriptados.

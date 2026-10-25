@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"KKK",
+		"IDI",
+		"KKK"
+	],
+	"key": {
+		"K": { "item": "minecraft:black_dye" },
+		"I": { "item": "minecraft:iron_ingot" },
+		"D": { "item": "minecraft:diamond" }
+	},
+	"result": {
+		"item": "emumod:ps3"
+	}
+}

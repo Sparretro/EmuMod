@@ -1,0 +1,19 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		" S ",
+		"BRB",
+		"IGI"
+	],
+	"key": {
+		"S": { "item": "minecraft:string" },
+		"B": { "item": "minecraft:stone_button" },
+		"R": { "item": "minecraft:redstone" },
+		"I": { "item": "minecraft:iron_ingot" },
+		"G": { "item": "minecraft:light_gray_dye" }
+	},
+	"result": {
+		"item": "emumod:control_n64"
+	}
+}

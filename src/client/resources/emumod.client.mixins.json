@@ -1,0 +1,14 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "com.emumod.client.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"client": [
+		"ManosMixin",
+		"HudMixin",
+		"FovMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

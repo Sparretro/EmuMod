@@ -1,0 +1,3 @@
+accessWidener v2 named
+# FiltroPantalla copia cada cuadro del juego de una vez a la memoria de la imagen, en vez de pixel por pixel
+accessible field com/mojang/blaze3d/platform/NativeImage pixels J

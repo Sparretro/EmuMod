@@ -1,0 +1,19 @@
+Núcleo de Nintendo 64: Mupen64Plus-Next (libretro)
+
+El archivo natives/windows-x64/mupen64plus_next_libretro.dll es el núcleo libretro Mupen64Plus-Next, sin
+modificar, tal como lo compila el buildbot oficial de libretro:
+  https://buildbot.libretro.com/nightly/windows/x86_64/latest/mupen64plus_next_libretro.dll.zip
+  (descargado el 2026-10-23, SHA-256 del zip 6ba65e218eddd0cbebdbf0d5e81a5c739b0d4e932a2091d10134e6da123a8b01)
+
+Se distribuye bajo la GNU General Public License versión 2 (ver Mupen64PlusNext-GPL-2.0.txt).
+
+Código fuente correspondiente: https://github.com/libretro/mupen64plus-libretro-nx
+  commit 15bada85906593376e8fd697f1b0b3af3a20f512 (el que figura dentro de la DLL)
+El repositorio del mod lo incluye como submódulo en native/Mupen64PlusNext, en ese mismo commit.
+
+La DLL contiene, entre otros, mupen64plus-core (GPL-2), el RDP por software Angrylion, el RSP ParaLLEl (con GNU
+Lightning, LGPL-3), el RSP CXD4, GLideN64 (GPL-2), libretro-common (MIT), libco y xxHash (BSD-2). Las licencias y avisos
+de cada parte están en el código fuente, en las carpetas de cada componente (LICENSE, LICENSES, COPYING).
+
+El mod no la enlaza: la carga en tiempo de ejecución a través de su puente propio (libretro_puente.dll, código del mod
+en native/puente) y le habla solo por la API libretro.

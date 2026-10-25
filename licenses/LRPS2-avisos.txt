@@ -1,0 +1,18 @@
+Núcleo de PlayStation 2: LRPS2 (PCSX2 para libretro)
+
+El archivo natives/windows-x64/pcsx2_libretro.dll es el núcleo libretro LRPS2, sin modificar, tal como lo compila el
+buildbot oficial de libretro:
+  https://buildbot.libretro.com/nightly/windows/x86_64/latest/pcsx2_libretro.dll.zip
+  (descargado el 2026-10-23, SHA-256 del zip 61bf273f9688698cedde9d9efe9d3afabddc36632babe24ee7345357f5e22a51)
+
+Se distribuye bajo la GNU General Public License versión 3 (ver LRPS2-GPL-3.0.txt).
+
+Código fuente correspondiente: https://github.com/libretro/ps2
+  commit 38d3a83f4ecdec977d609ece8afcc527f5f68702 (el que figura dentro de la DLL)
+El repositorio del mod lo incluye como submódulo en native/LRPS2, en ese mismo commit.
+
+La DLL contiene PCSX2 (GPL-3) y las bibliotecas de terceros que lista native/LRPS2/3rdparty, cada una con su licencia
+y avisos en su carpeta (entre otras glad, glslang, vixl, xbyak y los headers de Vulkan), además de libretro-common.
+
+El mod no la enlaza: la carga en tiempo de ejecución a través de su puente propio (libretro_puente.dll, código del mod
+en native/puente) y le habla solo por la API libretro. No incluye ninguna BIOS de PS2: cada jugador elige la suya.

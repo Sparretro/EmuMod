@@ -1,0 +1,13 @@
+Modelo 3D de la Game Boy Advance
+
+"Game Boy Retreat" por ForkyForklift
+https://sketchfab.com/3d-models/game-boy-retreat-52d112ad4d3f4ab0a57ea21623836c6f
+Autor: https://sketchfab.com/ForkyForklift
+Licencia: Creative Commons Atribución 4.0 Internacional (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/
+
+Cambios hechos para el mod (tools/ConvertirGlb.java): se pasó la malla del formato GLB a un formato binario propio
+(assets/emumod/modelos/gba.bin), la textura de la consola se achicó a 2048x2048 con la oclusión ambiental
+multiplicada y se borró la captura de juego que traía la pantalla; la textura del cartucho se achicó a 512x512.
+No se usan los mapas de normales, especular ni emisivo. En el juego, la pantalla muestra el juego emulado y los
+botones se hunden al apretarlos.

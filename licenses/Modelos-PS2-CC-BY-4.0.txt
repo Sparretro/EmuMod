@@ -1,0 +1,21 @@
+Modelos 3D de la PlayStation 2 (clásica y Slim) y su control
+
+Los tres se distribuyen bajo Creative Commons Atribución 4.0 Internacional (CC BY 4.0):
+https://creativecommons.org/licenses/by/4.0/
+
+- "classic ps2" por jei3323 (https://sketchfab.com/jei3323)
+  https://sketchfab.com/3d-models/classic-ps2-b2110ad2d21d451197590849da379b6e
+  En el mod: modelos/ps2.bin y textures/modelo/ps2/
+
+- "PS2 Slim low poly" por alexdperdomo (https://sketchfab.com/alexdperdomo)
+  https://sketchfab.com/3d-models/ps2-slim-low-poly-fc119755cd904498996c2ba1948262d1
+  En el mod: modelos/ps2_slim.bin y textures/modelo/ps2_slim/
+
+- "PS2 Controller" por rhcreations (https://sketchfab.com/rhcreations)
+  https://sketchfab.com/3d-models/ps2-controller-9b0db71448a14907a6235c79bdce786a
+  En el mod: modelos/control_ps2.bin y textures/modelo/control_ps2/
+
+Cambios hechos para el mod (tools/ConvertirModelo.java): se pasaron de GLB a un formato binario propio con las
+transformaciones de los nodos aplicadas, las texturas se achicaron (a 512 px en la PS2 clásica y a 1024 px en las otras)
+y no se usan los mapas de normales, rugosidad, metal ni emisión. La carcasa de la PS2 clásica se dibuja opaca. En el
+juego, los botones apretados del control se marcan con una sombra.

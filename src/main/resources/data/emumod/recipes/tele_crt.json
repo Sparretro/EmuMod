@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"CCC",
+		"CGC",
+		"IRI"
+	],
+	"key": {
+		"C": { "item": "minecraft:black_concrete" },
+		"G": { "item": "minecraft:glass_pane" },
+		"I": { "item": "minecraft:iron_ingot" },
+		"R": { "item": "minecraft:redstone" }
+	},
+	"result": {
+		"item": "emumod:tele_crt"
+	}
+}

@@ -1,0 +1,25 @@
+Modelos 3D de la NES, su control y el televisor CRT
+
+Los tres se distribuyen bajo Creative Commons Atribución 4.0 Internacional (CC BY 4.0):
+https://creativecommons.org/licenses/by/4.0/
+
+- "Nintendo NES original" por A.stark (https://sketchfab.com/a.stark)
+  https://sketchfab.com/3d-models/nintendo-nes-original-6de5054340184509af6f301c7f3fac57
+  En el mod: modelos/nes.bin y textures/modelo/nes/
+
+- "NES Controller Free" por donnichols (https://sketchfab.com/donnichols)
+  https://sketchfab.com/3d-models/nes-controller-free-5f85c2e259bd4ab5845d482ff4f1c039
+  En el mod: modelos/control_nes.bin y textures/modelo/control_nes/
+
+- "Ctr Tv Game Ready Prop" por aut2 (https://sketchfab.com/aut2)
+  https://sketchfab.com/3d-models/ctr-tv-game-ready-prop-366b92c8e3de4a69a9dd4da5f3416390
+  En el mod: modelos/tele_crt.bin y textures/modelo/tele_crt/
+
+Cambios hechos para el mod (tools/ConvertirModelo.java): se pasaron de GLB a un formato binario propio con las
+transformaciones de los nodos aplicadas, las texturas se achicaron a 1024 px como máximo y no se usan los mapas de
+normales, rugosidad ni metal. En el televisor, el verde croma de la pantalla se pintó de vidrio oscuro; el mod dibuja
+el juego encima. En el juego, los botones del control se hunden al apretarlos.
+
+- "TV" (televisor de plasma de 49") por CN Entertainment (https://sketchfab.com/cn-entertainment)
+  https://sketchfab.com/3d-models/tv-1b7eff20a86b4cc692bc4222ac1ac252 (CC BY 4.0)
+  En el mod: modelos/tele_plasma.bin

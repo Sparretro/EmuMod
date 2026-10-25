@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"III",
+		"DRD",
+		"GGG"
+	],
+	"key": {
+		"I": { "item": "minecraft:iron_ingot" },
+		"D": { "item": "minecraft:light_gray_dye" },
+		"R": { "item": "minecraft:redstone" },
+		"G": { "item": "minecraft:gray_dye" }
+	},
+	"result": {
+		"item": "emumod:nes"
+	}
+}

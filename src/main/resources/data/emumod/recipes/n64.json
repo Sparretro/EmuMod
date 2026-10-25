@@ -1,0 +1,17 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"III",
+		"KRK",
+		"KKK"
+	],
+	"key": {
+		"I": { "item": "minecraft:iron_ingot" },
+		"K": { "item": "minecraft:black_dye" },
+		"R": { "item": "minecraft:redstone" }
+	},
+	"result": {
+		"item": "emumod:n64"
+	}
+}

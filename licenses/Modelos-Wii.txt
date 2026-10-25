@@ -1,0 +1,12 @@
+Modelos 3D de la Wii y el Wiimote
+
+- "Wii" por elouisetrewartha (https://sketchfab.com/etrewartha)
+  https://sketchfab.com/3d-models/wii-7a96a38cf0684aecb42a58d1e3b65cb9
+  Licencia: Creative Commons Atribución-NoComercial 4.0 (CC BY-NC 4.0): https://creativecommons.org/licenses/by-nc/4.0/
+  NO permite uso comercial. En el mod: modelos/wii.bin
+
+- "WII Controller" por Twisty_z (https://sketchfab.com/Twisty_z)
+  https://sketchfab.com/3d-models/wii-controller-64ba1d9a275f4895a0bbafcf8475ffb2
+  Licencia: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/). En el mod: modelos/control_wii.bin
+
+Cambios (tools/ConvertirModelo.java): pasados a un formato binario propio; el Wiimote se acostó de costado y se dibuja opaco.
