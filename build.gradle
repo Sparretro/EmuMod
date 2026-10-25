@@ -139,6 +139,10 @@ def commitSkyEmu = providers.exec {
 	commandLine "git", "-C", "native/SkyEmu", "rev-parse", "--short", "HEAD"
 }.standardOutput.asText.map { it.trim() }
 
+// ProcessBuilder no escapa comillas en Windows: ahí \" llega como comilla literal al compilador; en Linux (el build de
+// GitHub) los argumentos pasan tal cual
+def comilla = System.getProperty("os.name").toLowerCase().contains("windows") ? "\\\"" : "\""
+
 def compilarNucleo = tasks.register("compilarNucleo", Exec) {
 	description = "Compila el núcleo libretro de SkyEmu como DLL para Windows x64"
 	def fuentes = layout.projectDirectory.dir("native/SkyEmu/src")
@@ -152,9 +156,8 @@ def compilarNucleo = tasks.register("compilarNucleo", Exec) {
 	doFirst { dll.get().parentFile.mkdirs() }
 	executable = zig.get()
 	args "cc", "-target", "x86_64-windows-gnu", "-O3", "-std=c11", "-shared", "-fno-sanitize=all", "-w",
-			// ProcessBuilder no escapa comillas en Windows: \" llega como comilla literal al compilador
 			"-DSE_PLATFORM_WINDOWS=1", "-DUSE_SDL=1",
-			"-DGIT_COMMIT_HASH=\\\"${commitSkyEmu.get()}\\\"", "-DGIT_BRANCH=\\\"main\\\"", "-DGIT_TAG=\\\"${commitSkyEmu.get()}\\\"",
+			"-DGIT_COMMIT_HASH=${comilla}${commitSkyEmu.get()}${comilla}", "-DGIT_BRANCH=${comilla}main${comilla}", "-DGIT_TAG=${comilla}${commitSkyEmu.get()}${comilla}",
 			"-o", dll.get().path,
 			fuentes.file("libretro.c").asFile.path, fuentes.file("shared.c").asFile.path, fuentes.file("localization.c").asFile.path
 }
