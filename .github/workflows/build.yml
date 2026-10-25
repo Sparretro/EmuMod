@@ -11,11 +11,12 @@ jobs:
     steps:
       - name: checkout repository
         uses: actions/checkout@v6
+      - name: validate gradle wrapper
+        uses: gradle/actions/wrapper-validation@v6
+      # Después de validar: SDL2 dentro de SkyEmu trae un wrapper de Gradle propio (de Android) que no se usa
       # Solo hacen falta las fuentes de SkyEmu y QuickNES; las de N64, PS2 y PS3 son grandes y no se compilan acá
       - name: checkout submodules
         run: git submodule update --init --depth 1 native/SkyEmu native/QuickNES
-      - name: validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v6
       - name: setup jdk
         uses: actions/setup-java@v5
         with:
