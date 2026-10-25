@@ -1,7 +1,6 @@
-# Automatically build the project and run any configured tests for every push
-# and submitted pull request. This can help catch issues that only occur on
-# certain platforms or Java versions, and provides a first line of defence
-# against bad commits.
+# Compila el mod en cada push y pull request, y deja el jar como artefacto del build.
+# Los emuladores de GBA y NES y el puente se compilan con zig para Windows x64 (zig compila para Windows desde Linux);
+# los demás vienen ya compilados en native/*-win64.
 
 name: build
 on: [pull_request, push]
@@ -12,17 +11,26 @@ jobs:
     steps:
       - name: checkout repository
         uses: actions/checkout@v6
+      # Solo hacen falta las fuentes de SkyEmu y QuickNES; las de N64, PS2 y PS3 son grandes y no se compilan acá
+      - name: checkout submodules
+        run: git submodule update --init --depth 1 native/SkyEmu native/QuickNES
       - name: validate gradle wrapper
         uses: gradle/actions/wrapper-validation@v6
       - name: setup jdk
         uses: actions/setup-java@v5
         with:
-          java-version: '25'
+          java-version: |
+            17
+            25
           distribution: 'microsoft'
+      - name: setup zig
+        uses: mlugg/setup-zig@v2
+        with:
+          version: 0.17.0
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
       - name: build
-        run: ./gradlew build
+        run: ./gradlew build -Porg.gradle.java.installations.paths="$JAVA_HOME_17_X64"
       - name: capture build artifacts
         uses: actions/upload-artifact@v7
         with:
