@@ -24,6 +24,9 @@ import java.util.Map;
 //        con muchísimo detalle que en Minecraft no se ve y que, dibujado cuadro por cuadro, baja los FPS)
 //        [--quitar-menores <fracción>]  (descarta las piezas más chicas que esa fracción del modelo, como tornillos)
 //        [--simplificar-texturas]  (también simplifica piezas con textura, sin mezclar coordenadas de textura distintas)
+//        [--uv <pasos>]  (con --simplificar-texturas: junta vértices cuya textura difiere menos de 1/pasos; 256 por defecto.
+//        Con una textura única para todo el modelo conviene 32: dentro de una zona de la textura se juntan, entre zonas no)
+//        [--conservar <regex>]  (con --simplificar: esas piezas quedan sin simplificar, como textos o letras finas)
 //        [--quitar <regex>]  (descarta las piezas cuyo nombre coincide, como un control o cables que vienen con la consola)
 //        [--separar <regex>]  (parte esas piezas en sus partes sueltas, <nombre>_0, _1...: para hundir botones que vienen juntos)
 //        [--girar-x <grados>]  (gira el modelo alrededor del eje x, para modelos exportados inclinados)
@@ -194,7 +197,21 @@ public class ConvertirModelo {
 			resto.remove(posQuitar);
 		}
 		if (simplificar > 0) {
-			simplificarPiezas(piezas, simplificar, resto.remove("--simplificar-texturas"));
+			int posConservar = resto.indexOf("--conservar");
+			String conservar = null;
+			if (posConservar >= 0) {
+				conservar = resto.get(posConservar + 1);
+				resto.remove(posConservar + 1);
+				resto.remove(posConservar);
+			}
+			int posUv = resto.indexOf("--uv");
+			int pasosUv = 256;
+			if (posUv >= 0) {
+				pasosUv = Integer.parseInt(resto.get(posUv + 1));
+				resto.remove(posUv + 1);
+				resto.remove(posUv);
+			}
+			simplificarPiezas(piezas, simplificar, resto.remove("--simplificar-texturas"), pasosUv, conservar);
 		}
 
 		new File(assets, "modelos").mkdirs();
@@ -280,7 +297,7 @@ public class ConvertirModelo {
 
 	// Agrupamiento de vértices: cada vértice se pasa al de su celda (posición cuantizada a la celda y normal cuantizada,
 	// para no mezclar caras con distinto sombreado); se descartan los triángulos que quedan degenerados o repetidos
-	static void simplificarPiezas(List<Pieza> piezas, double fraccion, boolean conTexturas) {
+	static void simplificarPiezas(List<Pieza> piezas, double fraccion, boolean conTexturas, int pasosUv, String conservar) {
 		double tam = 0;
 		float[] min = {Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE}, max = {-Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE};
 		for (Pieza p : piezas) {
@@ -297,6 +314,11 @@ public class ConvertirModelo {
 		double celda = tam * fraccion;
 		int antes = 0, despues = 0;
 		for (Pieza p : piezas) {
+			if (conservar != null && p.nombre.matches(conservar)) {
+				antes += p.indices.length / 3;
+				despues += p.indices.length / 3;
+				continue;
+			}
 			// Las piezas con textura (etiquetas, logos) son livianas y se deformarían: quedan como están, pero se separan un
 			// poco hacia afuera porque la carcasa simplificada puede taparlas (estaban pegadas a ella)
 			if (p.textura >= 0 && !conTexturas) {
@@ -316,7 +338,7 @@ public class ConvertirModelo {
 			for (int i = 0; i < n; i++) {
 				String clave = Math.round(p.datos[i * 8] / celda) + "," + Math.round(p.datos[i * 8 + 1] / celda) + "," + Math.round(p.datos[i * 8 + 2] / celda)
 						+ "|" + Math.round(p.datos[i * 8 + 5] * 2) + "," + Math.round(p.datos[i * 8 + 6] * 2) + "," + Math.round(p.datos[i * 8 + 7] * 2)
-						+ (p.textura >= 0 ? "|" + Math.round(p.datos[i * 8 + 3] * 256) + "," + Math.round(p.datos[i * 8 + 4] * 256) : "");
+						+ (p.textura >= 0 ? "|" + Math.round(p.datos[i * 8 + 3] * pasosUv) + "," + Math.round(p.datos[i * 8 + 4] * pasosUv) : "");
 				Integer ya = nuevoDe.get(clave);
 				if (ya == null) {
 					ya = elegidos.size();

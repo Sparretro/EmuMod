@@ -63,10 +63,25 @@ final class Modelo3D {
 	}
 
 	static synchronized Modelo3D de(String nombre) {
-		return CARGADOS.computeIfAbsent(nombre, Modelo3D::cargar);
+		return CARGADOS.computeIfAbsent(nombre, n -> cargar(n, n));
 	}
 
-	private static Modelo3D cargar(String nombre) {
+	/**
+	 * La versión liviana del modelo para cuando se ve chico (lejos, en el inventario, en la mano de otro):
+	 * {@code modelos/<nombre>_lejos.bin}, más simplificada y con las mismas texturas. Si no hay, el modelo de siempre.
+	 */
+	static synchronized Modelo3D lejos(String nombre) {
+		String liviano = nombre + "_lejos";
+		Modelo3D m = CARGADOS.get(liviano);
+		if (m == null) {
+			boolean hay = Minecraft.getInstance().getResourceManager().getResource(EmuMod.id("modelos/" + liviano + ".bin")).isPresent();
+			m = hay ? cargar(liviano, nombre) : de(nombre);
+			CARGADOS.put(liviano, m);
+		}
+		return m;
+	}
+
+	private static Modelo3D cargar(String nombre, String carpetaTexturas) {
 		ResourceLocation archivo = EmuMod.id("modelos/" + nombre + ".bin");
 		try (DataInputStream in = new DataInputStream(new BufferedInputStream(
 				Minecraft.getInstance().getResourceManager().getResourceOrThrow(archivo).open()))) {
@@ -75,7 +90,7 @@ final class Modelo3D {
 			}
 			ResourceLocation[] texturas = new ResourceLocation[in.readInt()];
 			for (int i = 0; i < texturas.length; i++) {
-				texturas[i] = EmuMod.id("textures/modelo/" + nombre + "/" + in.readUTF());
+				texturas[i] = EmuMod.id("textures/modelo/" + carpetaTexturas + "/" + in.readUTF());
 			}
 			int cantidad = in.readInt();
 			List<Pieza> piezas = new ArrayList<>(cantidad);

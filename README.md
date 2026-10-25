@@ -21,7 +21,7 @@ Por ahora funciona en **Windows de 64 bits** (los emuladores son programas nativ
 
 1. **Instala Fabric.** Descarga el instalador de [fabricmc.net/use/installer](https://fabricmc.net/use/installer/), ábrelo, elige **Minecraft 1.20.1** y toca **Instalar**. En el launcher de Minecraft aparece un perfil nuevo, **fabric-loader-1.20.1**.
 2. **Descarga Fabric API** para **1.20.1** desde [Modrinth](https://modrinth.com/mod/fabric-api/versions?g=1.20.1&l=fabric) (el archivo `fabric-api-0.92.x+1.20.1.jar`).
-3. **Descarga EmuMod**: entra a [**Releases**](https://github.com/Sparretro/EmuMod/releases/latest) y baja `emumod-2.1.0.jar`.
+3. **Descarga EmuMod**: entra a [**Releases**](https://github.com/Sparretro/EmuMod/releases/latest) y baja `emumod-2.1.1.jar`.
 4. **Copia los dos `.jar`** a la carpeta `mods` de Minecraft. Para abrirla, aprieta **Windows + R**, escribe `%appdata%\.minecraft\mods` y Enter (si no existe la carpeta `mods`, créala).
 5. **Abre el launcher**, elige el perfil **fabric-loader-1.20.1** y juega. Todo lo del mod está en la pestaña creativa **EmuMod**; en supervivencia se fabrica (recetas más abajo).
 6. Para jugar, **carga tus juegos** desde el botón **«Cargar juego»** de cada consola (tecla **O** para ver las opciones). Algunas consolas piden BIOS o firmware: mira [BIOS y firmware](#bios-y-firmware).
@@ -203,7 +203,7 @@ emumod.zig=C:/ruta/a/zig.exe                            # no hace falta si zig e
 ./gradlew build
 ```
 
-El mod queda en `build/libs/emumod-2.1.0.jar`, con todos los emuladores adentro.
+El mod queda en `build/libs/emumod-2.1.1.jar`, con todos los emuladores adentro.
 
 | Tarea | Qué hace |
 |---|---|

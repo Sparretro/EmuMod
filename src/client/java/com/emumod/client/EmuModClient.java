@@ -40,7 +40,11 @@ public class EmuModClient implements ClientModInitializer {
 		for (PortatilDoble p : PortatilDoble.values()) {
 			BuiltinItemRendererRegistry.INSTANCE.register(ModItems.de(p.modelo), (stack, modo, pose, buffers, luz, overlay) -> {
 				EmuladorCliente emulador = EmuladorCliente.de(p.sistema);
-				ModeloDoble.dibujar(p, pose, buffers, luz, overlay, 0, null, emulador.hayJuego() ? emulador.textura() : null, emulador.pausadoPorJugador());
+				// Fuera de la primera persona (inventario, suelo, marco, mano de otro) se ve chica: va la versión liviana
+				boolean lejos = modo != net.minecraft.world.item.ItemDisplayContext.FIRST_PERSON_RIGHT_HAND
+						&& modo != net.minecraft.world.item.ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
+				ModeloDoble.dibujar(p, pose, buffers, luz, overlay, 0, null, emulador.hayJuego() ? emulador.textura() : null, emulador.pausadoPorJugador(),
+						lejos);
 			});
 		}
 		BlockEntityRenderers.register(ModBlocks.GBA_ENTIDAD, contexto -> new GbaBlockRenderer());

@@ -37,9 +37,15 @@ final class ModeloDoble {
 	 */
 	static void dibujar(PortatilDoble p, PoseStack pose, MultiBufferSource buffers, int luz, int overlay, int botones, int[] palanca,
 			ResourceLocation pantalla, boolean pausado) {
+		dibujar(p, pose, buffers, luz, overlay, botones, palanca, pantalla, pausado, false);
+	}
+
+	/** Igual, con la versión liviana del modelo si {@code lejos} (ver {@link Modelo3D#lejos}). */
+	static void dibujar(PortatilDoble p, PoseStack pose, MultiBufferSource buffers, int luz, int overlay, int botones, int[] palanca,
+			ResourceLocation pantalla, boolean pausado, boolean lejos) {
 		pose.pushPose();
 		aplicarOrientacion(p, pose);
-		Modelo3D.de(p.nombreModelo).dibujar(pose, buffers, luz, overlay, pieza -> ajuste(p, pieza, botones, palanca));
+		(lejos ? Modelo3D.lejos(p.nombreModelo) : Modelo3D.de(p.nombreModelo)).dibujar(pose, buffers, luz, overlay, pieza -> ajuste(p, pieza, botones, palanca));
 		if (pantalla != null) {
 			VertexConsumer v = buffers.getBuffer(tipoPantalla(p, pantalla));
 			int c = pausado ? 90 : 255;

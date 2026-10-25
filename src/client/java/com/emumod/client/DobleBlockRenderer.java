@@ -8,10 +8,12 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.core.Direction;
 
-/** Dibuja la 3DS o la DS apoyada: abierta en el piso o en una mesa, con la pantalla táctil del lado de quien la apoyó. */
+/** Dibuja la portátil apoyada (3DS, SP o PSP) en el piso o en una mesa, con su frente del lado de quien la apoyó. */
 public class DobleBlockRenderer implements BlockEntityRenderer<ConsolaAbiertaBlockEntity> {
 	// 12 píxeles de ancho, como su forma de colisión
 	private static final float ESCALA = 0.75f / 0.95f;
+	// Más lejos que esto (en bloques, al cuadrado) se dibuja la versión liviana del modelo: chica en pantalla no se nota
+	private static final double DISTANCIA_LIVIANO = 2.5 * 2.5;
 
 	private final PortatilDoble consola;
 
@@ -31,7 +33,9 @@ public class DobleBlockRenderer implements BlockEntityRenderer<ConsolaAbiertaBlo
 		pose.scale(ESCALA, ESCALA, ESCALA);
 		pose.translate(-0.5f, -0.5f, -0.5f);
 		// Apoyada está apagada, como la GBA
-		ModeloDoble.dibujar(consola, pose, buffers, luz, overlay, 0, null, null, false);
+		boolean lejos = net.minecraft.client.Minecraft.getInstance().gameRenderer.getMainCamera().getPosition()
+				.distanceToSqr(net.minecraft.world.phys.Vec3.atCenterOf(entidad.getBlockPos())) > DISTANCIA_LIVIANO;
+		ModeloDoble.dibujar(consola, pose, buffers, luz, overlay, 0, null, null, false, lejos);
 		pose.popPose();
 	}
 }

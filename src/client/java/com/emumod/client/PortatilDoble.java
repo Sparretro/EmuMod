@@ -91,7 +91,7 @@ enum PortatilDoble {
 			// La palanca analógica, abajo de la cruz (es parte de la carcasa: no se mueve, pero se arrastra con el mouse)
 			new BotonModelo(0, null, -6.44f, -0.38f, 0.6f),
 			new float[] {1, 0}, new float[] {0, -1},
-			-0.02f, -0.62f, 75, 0.95f, new float[] {0.45f, -0.25f, 0.05f}, new float[] {0.30f, 0.93f, -0.20f});
+			-0.02f, -0.62f, 75, 0.95f, new float[] {0.42f, -0.08f, 0.04f}, new float[] {0.30f, 0.93f, -0.20f});
 
 
 	/** Botón del modelo: máscara del RetroPad, pieza o piezas que se hunden (separadas por «|», o null), centro (x, z) en la base y radio para el mouse. */
