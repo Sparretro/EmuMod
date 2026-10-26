@@ -125,13 +125,13 @@ public final class Joystick {
 			}
 			default -> {
 				// El RetroPad de libretro ya va por posición (B abajo, A a la derecha, Y a la izquierda, X arriba), y la PS2,
-				// la PS3, la 3DS, la GBA y la NES lo leen así
-				boolean sinPalancas = consola == Sistema.GBA || consola == Sistema.NES;
+				// la PS3, la 3DS, la PSP, la DS, la GBA y la NES lo leen así
+				boolean sinPalancas = consola == Sistema.GBA || consola == Sistema.NES || consola == Sistema.NDS;
 				m |= pon(abajo, Boton.B.mascara()) | pon(derecha, Boton.A.mascara()) | pon(izquierda, Boton.Y.mascara())
 						| pon(arriba, Boton.X.mascara()) | pon(lb, Boton.L.mascara()) | pon(rb, Boton.R.mascara())
 						| pon(lt, Boton.L2.mascara()) | pon(rt, Boton.R2.mascara()) | pon(l3, Boton.L3.mascara())
 						| pon(r3, Boton.R3.mascara()) | pon(start, Boton.START.mascara()) | pon(back, Boton.SELECT.mascara())
-						// En la GBA y la NES la palanca izquierda también es la cruz
+						// En la GBA, la NES y la DS la palanca izquierda también es la cruz
 						| pon(cruzArriba || sinPalancas && ly < -PALANCA_COMO_BOTON, Boton.ARRIBA.mascara())
 						| pon(cruzAbajo || sinPalancas && ly > PALANCA_COMO_BOTON, Boton.ABAJO.mascara())
 						| pon(cruzIzquierda || sinPalancas && lx < -PALANCA_COMO_BOTON, Boton.IZQUIERDA.mascara())
@@ -151,7 +151,7 @@ public final class Joystick {
 	 * {@link #mascara}).
 	 */
 	static void palancas(Sistema consola, int[][] palancas) {
-		if (consola == Sistema.GBA || consola == Sistema.NES) {
+		if (consola == Sistema.GBA || consola == Sistema.NES || consola == Sistema.NDS) {
 			return;
 		}
 		float lx = eje(GLFW.GLFW_GAMEPAD_AXIS_LEFT_X), ly = eje(GLFW.GLFW_GAMEPAD_AXIS_LEFT_Y);

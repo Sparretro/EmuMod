@@ -36,7 +36,7 @@ public final class ModBlocks {
 	public static final BlockEntityType<GbaBlockEntity> GBA_ENTIDAD = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE,
 			EmuMod.id("gba"), BlockEntityType.Builder.of(GbaBlockEntity::new, GBA).build(null));
 
-	// La Nintendo 3DS, la Game Boy Advance SP y la PSP apoyadas (las dos primeras abiertas); sus ítems están en ModItems
+	// La Nintendo 3DS, la Game Boy Advance SP, la PSP y la DS apoyadas (las de tapa, abiertas); sus ítems están en ModItems
 	public static final ConsolaAbiertaBlock N3DS = Registry.register(BuiltInRegistries.BLOCK, EmuMod.id("n3ds"),
 			new ConsolaAbiertaBlock(ConsolaItem.Modelo.N3DS, BlockBehaviour.Properties.of()
 					.mapColor(MapColor.COLOR_CYAN)
@@ -70,12 +70,25 @@ public final class ModBlocks {
 	public static final BlockEntityType<ConsolaAbiertaBlockEntity> PSP_ENTIDAD = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE,
 			EmuMod.id("psp"), BlockEntityType.Builder.of(ConsolaAbiertaBlockEntity::new, PSP).build(null));
 
-	/** El bloque de la portátil apoyada (3DS, SP o PSP) y su entidad. */
+	public static final ConsolaAbiertaBlock NDS = Registry.register(BuiltInRegistries.BLOCK, EmuMod.id("nds"),
+			new ConsolaAbiertaBlock(ConsolaItem.Modelo.NDS, BlockBehaviour.Properties.of()
+					.mapColor(MapColor.COLOR_PINK)
+					.strength(0.3f)
+					.sound(SoundType.STONE)
+					.noOcclusion()
+					.pushReaction(PushReaction.DESTROY)));
+
+	public static final BlockEntityType<ConsolaAbiertaBlockEntity> NDS_ENTIDAD = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE,
+			EmuMod.id("nds"), BlockEntityType.Builder.of(ConsolaAbiertaBlockEntity::new, NDS).build(null));
+
+	/** El bloque de la portátil apoyada (3DS, SP, PSP o DS) y su entidad. */
+
 	public static ConsolaAbiertaBlock abierta(ConsolaItem.Modelo modelo) {
 		return switch (modelo) {
 			case N3DS -> N3DS;
 			case GBA_SP -> GBA_SP;
 			case PSP -> PSP;
+			case NDS -> NDS;
 			default -> throw new IllegalArgumentException(modelo + " no se apoya abierta");
 		};
 	}
@@ -85,6 +98,7 @@ public final class ModBlocks {
 			case N3DS -> N3DS_ENTIDAD;
 			case GBA_SP -> GBA_SP_ENTIDAD;
 			case PSP -> PSP_ENTIDAD;
+			case NDS -> NDS_ENTIDAD;
 			default -> throw new IllegalArgumentException(modelo + " no se apoya abierta");
 		};
 	}

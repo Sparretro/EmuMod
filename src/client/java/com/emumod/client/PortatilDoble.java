@@ -5,8 +5,8 @@ import com.emumod.client.emu.Nucleo.Boton;
 import com.emumod.client.emu.Sistema;
 
 /**
- * Las portátiles con modelo 3D propio (la 3DS, la Game Boy Advance SP y la PSP): se juegan en las manos como la GBA; en
- * la 3DS la pantalla de abajo es táctil.
+ * Las portátiles con modelo 3D propio (la 3DS, la DS, la Game Boy Advance SP y la PSP): se juegan en las manos como la GBA; en
+ * la 3DS y la DS la pantalla de abajo es táctil.
  * Cada una trae su modelo 3D, dónde están sus pantallas y botones en ese modelo y cómo se sostiene (ver
  * {@link ModeloDoble} y {@link ManosDoble}).
  *
@@ -91,7 +91,33 @@ enum PortatilDoble {
 			// La palanca analógica, abajo de la cruz (es parte de la carcasa: no se mueve, pero se arrastra con el mouse)
 			new BotonModelo(0, null, -6.44f, -0.38f, 0.6f),
 			new float[] {1, 0}, new float[] {0, -1},
-			-0.02f, -0.62f, 75, 0.95f, new float[] {0.42f, -0.08f, 0.04f}, new float[] {0.30f, 0.93f, -0.20f});
+			-0.02f, -0.62f, 75, 0.95f, new float[] {0.42f, -0.08f, 0.04f}, new float[] {0.30f, 0.93f, -0.20f}),
+	/**
+	 * «Nintendo DSi Console» de AlanaSierra (CC-BY-4.0, Sketchfab): una DSi rosa con cada botón como pieza suelta. Emula
+	 * una DS (melonDS DS en modo DS), que entrega un cuadro de 256x384 con las dos pantallas enteras, una arriba de la
+	 * otra. El jugador está del lado de +z (la tapa se abre hacia -z, a unos 30°) y +x es su derecha. Las dos pantallas
+	 * del modelo son algo más anchas que 4:3: el juego va centrado, con la proporción de la DS.
+	 */
+	NDS(Sistema.NDS, ConsolaItem.Modelo.NDS, "nds", 0.245f, 0.0525f, -0.0525f, 0.009f, false,
+			new float[][] {{-0.0646f, 0.0870f, -0.1593f}, {0.0557f, 0.0870f, -0.1593f}, {0.0557f, 0.0422f, -0.0810f}, {-0.0646f, 0.0422f, -0.0810f}},
+			new float[] {0, 0.87f, 0.5f}, new float[] {0, 0, 1, 0.5f},
+			new float[][] {{-0.0647f, 0.0292f, -0.0359f}, {0.0558f, 0.0292f, -0.0359f}, {0.0558f, 0.0292f, 0.0545f}, {-0.0647f, 0.0292f, 0.0545f}},
+			new float[] {0, 0.5f, 1, 1},
+			new BotonModelo[] {
+					new BotonModelo(Boton.A.mascara(), "A_Button_geo2_aiStandardSurface1_0", 0.104f, -0.0075f, 0.011f),
+					new BotonModelo(Boton.B.mascara(), "B_Button_geo_aiStandardSurface1_0", 0.092f, 0.006f, 0.011f),
+					new BotonModelo(Boton.X.mascara(), "X_Button_geo1_aiStandardSurface1_0", 0.092f, -0.021f, 0.011f),
+					new BotonModelo(Boton.Y.mascara(), "Y_Button_geo3_aiStandardSurface1_0", 0.079f, -0.0075f, 0.011f),
+					new BotonModelo(Boton.START.mascara(), "Start_Button_geo4_aiStandardSurface1_0", 0.068f, 0.040f, 0.007f),
+					new BotonModelo(Boton.SELECT.mascara(), "Select_Button_geo5_aiStandardSurface1_0", 0.068f, 0.051f, 0.007f),
+					// Gatillos: las esquinas de atrás de la base
+					new BotonModelo(Boton.L.mascara(), "L_button_geo_aiStandardSurface1_0", -0.109f, -0.065f, 0.02f),
+					new BotonModelo(Boton.R.mascara(), "R_button_geo_aiStandardSurface1_0", 0.1015f, -0.065f, 0.02f)},
+			new BotonModelo(0, "D_Pad_geo_aiStandardSurface1_0", -0.0985f, -0.0075f, 0.02f),
+			null,
+			new float[] {1, 0}, new float[] {0, -1},
+			0.03f, -0.62f, 50, 0.74f, new float[] {0.37f, -0.16f, 0.05f}, new float[] {0.30f, 0.93f, -0.20f});
+
 
 
 	/** Botón del modelo: máscara del RetroPad, pieza o piezas que se hunden (separadas por «|», o null), centro (x, z) en la base y radio para el mouse. */

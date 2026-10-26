@@ -1,0 +1,12 @@
+melonDS DS (núcleo de Nintendo DS)
+
+- Emulador: melonDS DS, de Jesse Talavera, sobre melonDS de Arisotura y colaboradores
+  https://github.com/JesseTG/melonds-ds — https://melonds.kuribo64.net
+- Licencia: GNU General Public License versión 3.0 (texto completo en melonDSDS-GPL-3.0.txt). Incluye bibliotecas de
+  terceros bajo sus propias licencias, listadas en el repositorio de melonDS DS.
+- En EmuMod: natives/windows-x64/melondsds_libretro.dll, la DLL nightly oficial del buildbot de libretro
+  (https://buildbot.libretro.com/nightly/windows/x86_64/latest/melondsds_libretro.dll.zip), sin modificar.
+  SHA-256 del zip: 7a25a0de1ca2205f54fc86499bad7acc054b258ee1b3e1368e024070785c9dae
+- Versión que informa la DLL: melonDS DS 1.4.0. Código fuente: https://github.com/JesseTG/melonds-ds (versión v1.4.0,
+  commit f394adbacb5722ee97c1b37c8064da9a25818310).
+- Sin las BIOS del jugador, melonDS usa sus BIOS de reemplazo libres (no incluye ningún archivo de Nintendo).

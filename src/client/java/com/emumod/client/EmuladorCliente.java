@@ -39,6 +39,12 @@ public final class EmuladorCliente {
 	// Los cartuchos de N64 van de 4 a 64 MB; los tres órdenes de bytes de las ROMs (.z64, .v64, .n64) los entiende el núcleo
 	private static final long TAMANIO_MAXIMO_ROM_N64 = 64L * 1024 * 1024;
 	private static final int[] CABECERAS_N64 = {0x80371240, 0x37804012, 0x40123780};
+	// Los cartuchos de DS llegan a 512 MB; todos llevan en la cabecera el CRC del logo de Nintendo (0xCF56)
+	private static final long TAMANIO_MAXIMO_ROM_NDS = 512L * 1024 * 1024;
+	private static final int OFFSET_CRC_LOGO_NDS = 0x15C;
+	// BIOS de la DS: bios7 16 KB, bios9 4 KB y firmware de 128, 256 o 512 KB (DS, DS Lite, DSi en modo DS e iQue)
+	private static final long TAMANIO_BIOS7_NDS = 16 * 1024, TAMANIO_BIOS9_NDS = 4 * 1024;
+	private static final java.util.Set<Long> TAMANIOS_FIRMWARE_NDS = java.util.Set.of(128L * 1024, 256L * 1024, 512L * 1024);
 	// Imágenes de disco de PS2 que entiende LRPS2; la BIOS es una imagen de 4 MB (las más nuevas, hasta 8)
 	private static final java.util.Set<String> EXTENSIONES_PS2 = java.util.Set.of(".iso", ".bin", ".cue", ".chd", ".cso", ".zso", ".gz", ".m3u", ".elf");
 	// PS3: imagen de disco, juego en carpeta (su PS3_DISC.SFB o PARAM.SFO), EBOOT.BIN, paquete .pkg o ejecutable
@@ -80,7 +86,7 @@ public final class EmuladorCliente {
 		cuadro = new int[consola.ancho * consola.alto];
 		filtro = FiltroPantalla.porDefecto(consola);
 		// Con la NES y la N64 se mira un televisor a unos metros: más cerrado se ve más grande; las portátiles van a los ojos
-		fovConsola = consola == Sistema.GBA || consola == Sistema.N3DS || consola == Sistema.PSP ? 70 : 50;
+		fovConsola = consola == Sistema.GBA || consola == Sistema.N3DS || consola == Sistema.PSP || consola == Sistema.NDS ? 70 : 50;
 		cargarOpciones();
 	}
 
@@ -181,9 +187,10 @@ public final class EmuladorCliente {
 			long maximo = switch (consola) {
 				case NES -> TAMANIO_MAXIMO_ROM_NES;
 				case N64 -> TAMANIO_MAXIMO_ROM_N64;
+				case NDS -> TAMANIO_MAXIMO_ROM_NDS;
 				default -> TAMANIO_MAXIMO_ROM;
 			};
-			String sufijo = consola == Sistema.N64 ? "_n64" : "";
+			String sufijo = consola == Sistema.N64 ? "_n64" : consola == Sistema.NDS ? "_nds" : "";
 			if (tamanio < TAMANIO_CABECERA || tamanio > maximo) {
 				alTerminar.accept(Mensaje.error("screen.emumod.rom_tamanio_invalido" + sufijo, nombre));
 				return;
@@ -208,12 +215,19 @@ public final class EmuladorCliente {
 			int cabecera = java.nio.ByteBuffer.wrap(rom, 0, 4).getInt();
 			return java.util.Arrays.stream(CABECERAS_N64).anyMatch(c -> c == cabecera);
 		}
+		if (consola == Sistema.NDS) {
+			return rom.length >= 0x200 && (rom[OFFSET_CRC_LOGO_NDS] & 0xFF) == 0x56 && (rom[OFFSET_CRC_LOGO_NDS + 1] & 0xFF) == 0xCF;
+		}
 		// Byte fijo de la cabecera de todo cartucho de GBA
 		return (rom[OFFSET_VALOR_FIJO] & 0xFF) == VALOR_FIJO;
 	}
 
 	public void cargarJuego(byte[] rom, String nombre, Consumer<Mensaje> alTerminar) {
 		pausadoPorJugador = false;
+		if (consola == Sistema.NDS) {
+			hilo().cargar(rom, nombre, opcionesNds(), enRender(alTerminar));
+			return;
+		}
 		hilo().cargar(rom, nombre, enRender(alTerminar));
 	}
 
@@ -373,7 +387,64 @@ public final class EmuladorCliente {
 		return Mensaje.ok("screen.emumod.firmware_ps3_listo");
 	}
 
+	// ---- DS: BIOS y firmware del jugador (si no están, melonDS DS usa los de reemplazo) ----
+
+	private static Path carpetaBiosNds() {
+		return carpetaSistema().resolve("melonDS DS");
+	}
+
+	/** Están las BIOS y el firmware de la DS del jugador (en sistema/melonDS DS, con los nombres que busca melonDS DS). */
+	public static boolean hayBiosNds() {
+		return java.util.stream.Stream.of("bios7.bin", "bios9.bin", "firmware.bin").allMatch(n -> Files.isRegularFile(carpetaBiosNds().resolve(n)));
+	}
+
+	// Con las BIOS del jugador arranca como una DS de verdad (su firmware, su idioma); sin ellas, con las libres de melonDS
+	private static java.util.Map<String, String> opcionesNds() {
+		return hayBiosNds() ? java.util.Map.of("melonds_sysfile_mode", "native", "melonds_firmware_nds_path", "melonDS DS/firmware.bin")
+				: java.util.Map.of("melonds_sysfile_mode", "builtin");
+	}
+
+	/**
+	 * Instala las BIOS de la DS: el jugador elige uno de los tres archivos (el firmware) y los otros se buscan en la misma
+	 * carpeta por tamaño y nombre (bios7 / biosnds7, bios9 / biosnds9; el BIOS de GBA también pesa 16 KB, por eso el 7).
+	 */
+	private Mensaje instalarBiosNds(Path elegido) {
+		Path carpeta = elegido.toAbsolutePath().getParent();
+		Path bios7 = null, bios9 = null, firmware = null;
+		try (var archivos = Files.list(carpeta)) {
+			for (Path a : (Iterable<Path>) archivos::iterator) {
+				String n = a.getFileName().toString().toLowerCase(java.util.Locale.ROOT);
+				if (!Files.isRegularFile(a)) {
+					continue;
+				}
+				long t = Files.size(a);
+				if (t == TAMANIO_BIOS7_NDS && n.contains("7") && !n.contains("gba")) {
+					bios7 = a;
+				} else if (t == TAMANIO_BIOS9_NDS && n.contains("9")) {
+					bios9 = a;
+				} else if (TAMANIOS_FIRMWARE_NDS.contains(t) && (n.contains("firm") || a.equals(elegido.toAbsolutePath()))) {
+					firmware = a;
+				}
+			}
+			String falta = bios7 == null ? "bios7" : bios9 == null ? "bios9" : firmware == null ? "firmware" : null;
+			if (falta != null) {
+				return Mensaje.error("screen.emumod.bios_nds_faltan", falta);
+			}
+			Files.createDirectories(carpetaBiosNds());
+			Files.copy(bios7, carpetaBiosNds().resolve("bios7.bin"), StandardCopyOption.REPLACE_EXISTING);
+			Files.copy(bios9, carpetaBiosNds().resolve("bios9.bin"), StandardCopyOption.REPLACE_EXISTING);
+			Files.copy(firmware, carpetaBiosNds().resolve("firmware.bin"), StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			EmuMod.LOGGER.error("No se pudieron copiar las BIOS de DS desde {}", carpeta, e);
+			return Mensaje.error("screen.emumod.error_lectura", elegido.getFileName().toString());
+		}
+		return Mensaje.ok("screen.emumod.bios_nds_instaladas");
+	}
+
 	public Mensaje instalarBios(Path archivo) {
+		if (consola == Sistema.NDS) {
+			return instalarBiosNds(archivo);
+		}
 		if (consola == Sistema.PS2) {
 			return instalarBiosPs2(archivo);
 		}

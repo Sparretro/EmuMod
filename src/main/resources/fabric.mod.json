@@ -3,7 +3,7 @@
 	"id": "emumod",
 	"version": "${version}",
 	"name": "EmuMod",
-	"description": "Juega tus propios juegos de GBA, 3DS, PSP, NES, N64, PS2, PS3 y Wii dentro de Minecraft: consolas en 3D, televisores y soporte para joystick.",
+	"description": "Juega tus propios juegos de GBA, DS, 3DS, PSP, NES, N64, PS2, PS3 y Wii dentro de Minecraft: consolas en 3D, televisores y soporte para joystick.",
 	"authors": [
 		{
 			"name": "Spar Retro",

@@ -1,0 +1,18 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"category": "misc",
+	"pattern": [
+		"IGI",
+		"BGB",
+		"IDI"
+	],
+	"key": {
+		"I": { "item": "minecraft:iron_ingot" },
+		"G": { "item": "minecraft:glass_pane" },
+		"B": { "item": "minecraft:stone_button" },
+		"D": { "item": "minecraft:pink_dye" }
+	},
+	"result": {
+		"item": "emumod:nds"
+	}
+}

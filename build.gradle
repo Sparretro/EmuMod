@@ -284,6 +284,25 @@ def extraerNucleo3ds = tasks.register("extraerNucleo3ds", Copy) {
 	into layout.buildDirectory.dir("nativos3ds")
 }
 
+// ---- Núcleo de DS: melonDS DS (GPL-3), DLL oficial del buildbot de libretro ----
+// Compilarlo pide CMake y un compilador de C++20 completo; se usa la DLL nightly y se verifica
+def extraerNucleoNds = tasks.register("extraerNucleoNds", Copy) {
+	description = "Extrae la DLL de melonDS DS (buildbot de libretro) para Windows x64"
+	def zip = layout.projectDirectory.file("native/melonDSDS-win64/melondsds_libretro.dll.zip")
+	inputs.file(zip)
+	doFirst {
+		def hash = java.security.MessageDigest.getInstance("SHA-256").digest(zip.asFile.bytes).encodeHex().toString()
+		if (hash != "7a25a0de1ca2205f54fc86499bad7acc054b258ee1b3e1368e024070785c9dae") {
+			throw new GradleException("La DLL de melonDS DS no es la esperada (SHA-256 ${hash})")
+		}
+	}
+	from(zipTree(zip)) {
+		include "melondsds_libretro.dll"
+		into "natives/windows-x64"
+	}
+	into layout.buildDirectory.dir("nativosNds")
+}
+
 // ---- Núcleo de PSP: PPSSPP para libretro (GPL-2), DLL oficial del buildbot de libretro ----
 // Compilar PPSSPP pide CMake y Visual Studio; se usa la DLL nightly y se verifica
 def extraerNucleoPsp = tasks.register("extraerNucleoPsp", Copy) {
@@ -348,6 +367,7 @@ processClientResources {
 	from(extraerNucleoWii)
 	from(extraerNucleo3ds)
 	from(extraerNucleoPsp)
+	from(extraerNucleoNds)
 	// Archivos de sistema de PPSSPP (del buildbot de libretro): Nucleo los descomprime en la carpeta de sistema
 	from(verificarSistemaPsp) {
 		into "sistema"
@@ -442,6 +462,19 @@ tasks.register("probarN3ds", JavaExec) {
 	systemProperty "emumod.cuadros", providers.gradleProperty("cuadros").getOrElse("0")
 	args layout.buildDirectory.dir("pruebas-3ds").get().asFile.path,
 			providers.gradleProperty("juego").getOrElse(layout.projectDirectory.file("native/prueba3ds/prueba3ds.3dsx").asFile.path), "N3DS"
+}
+
+tasks.register("probarNds", JavaExec) {
+	description = "Corre el programa de prueba propio de DS (o el juego indicado) en melonDS DS; capturas en build/pruebas-nds"
+	classpath = sourceSets.pruebasNucleo.runtimeClasspath
+	mainClass = "com.emumod.pruebas.PruebaDosPantallas"
+	javaLauncher = javaToolchains.launcherFor {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+	jvmArgs "-Demumod.depurar=true"
+	systemProperty "emumod.cuadros", providers.gradleProperty("cuadros").getOrElse("0")
+	args layout.buildDirectory.dir("pruebas-nds").get().asFile.path,
+			providers.gradleProperty("juego").getOrElse(layout.projectDirectory.file("native/pruebands/pruebands.nds").asFile.path), "NDS"
 }
 
 tasks.register("probarPsp", JavaExec) {

@@ -27,6 +27,10 @@ public final class ModItems {
 	public static final Item PSP = Registry.register(BuiltInRegistries.ITEM, EmuMod.id("psp"),
 			new GbaItem(ModBlocks.PSP, ConsolaItem.Modelo.PSP, new Item.Properties().stacksTo(1)));
 
+	// La Nintendo DS (el modelo es una DSi): como la 3DS, en las manos y abierta
+	public static final Item NDS = Registry.register(BuiltInRegistries.ITEM, EmuMod.id("nds"),
+			new GbaItem(ModBlocks.NDS, ConsolaItem.Modelo.NDS, new Item.Properties().stacksTo(1)));
+
 	/** El ítem de cada portátil. */
 	public static Item de(ConsolaItem.Modelo modelo) {
 		return switch (modelo) {
@@ -34,6 +38,7 @@ public final class ModItems {
 			case GBA_SP -> GBA_SP;
 			case N3DS -> N3DS;
 			case PSP -> PSP;
+			case NDS -> NDS;
 		};
 	}
 
@@ -100,6 +105,7 @@ public final class ModItems {
 			entries.accept(GBA);
 			entries.accept(GBA_SP);
 			entries.accept(N3DS);
+			entries.accept(NDS);
 			entries.accept(PSP);
 			entries.accept(CONTROL_NES);
 			entries.accept(CONTROL_N64);

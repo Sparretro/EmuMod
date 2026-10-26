@@ -91,6 +91,8 @@ public final class Nucleo {
 		boolean puente_cargar(String ruta);
 
 		void puente_permitir_gl(boolean permitir);
+
+		void puente_filtrar_excepciones(boolean filtrar);
 	}
 
 	private Nucleo(Sistema consola, Path dll, Path puente, Path sistema) {
@@ -103,6 +105,7 @@ public final class Nucleo {
 				throw new IllegalStateException("No se pudo cargar el núcleo " + dll.getFileName());
 			}
 			p.puente_permitir_gl(consola.usaGl());
+			p.puente_filtrar_excepciones(consola.filtraExcepciones());
 			api = Native.load(ruta, Libretro.class);
 		} else {
 			api = Native.load(dll.toAbsolutePath().toString(), Libretro.class);

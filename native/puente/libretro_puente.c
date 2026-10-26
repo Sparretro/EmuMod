@@ -541,13 +541,20 @@ typedef uintptr_t(__cdecl *beginthreadex_t)(void *, unsigned, unsigned(__stdcall
 static crear_hilo_t crear_hilo_original;
 static beginthreadex_t beginthreadex_original;
 
+static void anotar_hilo_del_nucleo(DWORD id);
+
 static HANDLE WINAPI p_crear_hilo(LPSECURITY_ATTRIBUTES seguridad, SIZE_T pila, LPTHREAD_START_ROUTINE inicio, LPVOID arg, DWORD banderas,
 		LPDWORD id) {
 	if (pila < PILA_MINIMA) {
 		pila = PILA_MINIMA;
 		banderas |= STACK_SIZE_PARAM_IS_A_RESERVATION;
 	}
-	return crear_hilo_original(seguridad, pila, inicio, arg, banderas, id);
+	DWORD propio;
+	HANDLE h = crear_hilo_original(seguridad, pila, inicio, arg, banderas, id ? id : &propio);
+	if (h) {
+		anotar_hilo_del_nucleo(id ? *id : propio);
+	}
+	return h;
 }
 
 static uintptr_t __cdecl p_beginthreadex(void *seguridad, unsigned pila, unsigned(__stdcall *inicio)(void *), void *arg, unsigned banderas,
@@ -556,7 +563,12 @@ static uintptr_t __cdecl p_beginthreadex(void *seguridad, unsigned pila, unsigne
 		pila = PILA_MINIMA;
 		banderas |= STACK_SIZE_PARAM_IS_A_RESERVATION;
 	}
-	return beginthreadex_original(seguridad, pila, inicio, arg, banderas, id);
+	unsigned propio;
+	uintptr_t h = beginthreadex_original(seguridad, pila, inicio, arg, banderas, id ? id : &propio);
+	if (h) {
+		anotar_hilo_del_nucleo(id ? *id : propio);
+	}
+	return h;
 }
 
 // Reemplaza en la tabla de importaciones del módulo la función importada con ese nombre; devuelve la original o NULL
@@ -594,6 +606,79 @@ static void *parchear_importacion(HMODULE modulo, const char *nombre, void *nuev
 	return original;
 }
 
+// ---- Manejadores de excepciones del núcleo ----
+
+// melonDS DS registra un manejador de excepciones para todo el proceso (para la memoria rápida de su JIT), y la JVM usa
+// excepciones a propósito en sus propios hilos (nulos, puntos de parada). Ese manejador falla con las excepciones de un
+// hilo que no es del núcleo, vuelve a entrar con la falla nueva y así hasta desbordar la pila: Minecraft se cerraba al
+// arrancar un juego de DS (fuera de Minecraft no hay otros hilos de Java y no pasa). Con el filtro, los manejadores que
+// registra el núcleo solo ven las excepciones del hilo que lo maneja y de los hilos que él mismo crea; las demás siguen
+// de largo hacia la JVM.
+#define MANEJADORES_MAXIMO 4
+#define HILOS_DEL_NUCLEO_MAXIMO 256
+
+static bool filtrar_excepciones;
+static PVECTORED_EXCEPTION_HANDLER manejadores[MANEJADORES_MAXIMO];
+static volatile DWORD hilos_del_nucleo[HILOS_DEL_NUCLEO_MAXIMO];
+static volatile LONG cantidad_hilos_del_nucleo;
+
+EXPORTAR void puente_filtrar_excepciones(int filtrar) {
+	filtrar_excepciones = filtrar != 0;
+}
+
+static void anotar_hilo_del_nucleo(DWORD id) {
+	LONG i = InterlockedIncrement(&cantidad_hilos_del_nucleo) - 1;
+	if (id != 0 && i < HILOS_DEL_NUCLEO_MAXIMO) {
+		hilos_del_nucleo[i] = id;
+	}
+}
+
+static bool es_hilo_del_nucleo(void) {
+	DWORD yo = GetCurrentThreadId();
+	if (yo == hilo_java) {
+		return true;
+	}
+	LONG n = cantidad_hilos_del_nucleo < HILOS_DEL_NUCLEO_MAXIMO ? cantidad_hilos_del_nucleo : HILOS_DEL_NUCLEO_MAXIMO;
+	for (LONG i = 0; i < n; i++) {
+		if (hilos_del_nucleo[i] == yo) {
+			return true;
+		}
+	}
+	return false;
+}
+
+static LONG filtrar(int i, EXCEPTION_POINTERS *e) {
+	if (filtrar_excepciones && !es_hilo_del_nucleo()) {
+		return EXCEPTION_CONTINUE_SEARCH;
+	}
+	return manejadores[i](e);
+}
+
+// Una envoltura por lugar: Windows llama al manejador sin dato propio, así que cada uno sabe a cuál del núcleo corresponde
+static LONG CALLBACK envoltura0(EXCEPTION_POINTERS *e) {
+	return filtrar(0, e);
+}
+static LONG CALLBACK envoltura1(EXCEPTION_POINTERS *e) {
+	return filtrar(1, e);
+}
+static LONG CALLBACK envoltura2(EXCEPTION_POINTERS *e) {
+	return filtrar(2, e);
+}
+static LONG CALLBACK envoltura3(EXCEPTION_POINTERS *e) {
+	return filtrar(3, e);
+}
+static const PVECTORED_EXCEPTION_HANDLER ENVOLTURAS[MANEJADORES_MAXIMO] = {envoltura0, envoltura1, envoltura2, envoltura3};
+
+static PVOID WINAPI p_agregar_manejador(ULONG primero, PVECTORED_EXCEPTION_HANDLER manejador) {
+	for (int i = 0; i < MANEJADORES_MAXIMO; i++) {
+		if (InterlockedCompareExchangePointer((PVOID volatile *)&manejadores[i], (PVOID)manejador, NULL) == NULL) {
+			return AddVectoredExceptionHandler(primero, ENVOLTURAS[i]);
+		}
+	}
+	// Sin lugar: se registra tal cual
+	return AddVectoredExceptionHandler(primero, manejador);
+}
+
 static void agrandar_pilas(HMODULE modulo) {
 	void *original = parchear_importacion(modulo, "CreateThread", (void *)p_crear_hilo);
 	crear_hilo_original = original ? (crear_hilo_t)original : CreateThread;
@@ -601,6 +686,7 @@ static void agrandar_pilas(HMODULE modulo) {
 	if (original) {
 		beginthreadex_original = (beginthreadex_t)original;
 	}
+	parchear_importacion(modulo, "AddVectoredExceptionHandler", (void *)p_agregar_manejador);
 }
 
 // ---- Carga ----

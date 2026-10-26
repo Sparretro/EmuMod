@@ -1,0 +1,11 @@
+Modelo 3D de la Nintendo DS (una DSi)
+
+"Nintendo DSi Console" por AlanaSierra
+https://sketchfab.com/3d-models/nintendo-dsi-console-6e4f9b04cc3241eaa4fa497351c75209
+Autor: https://sketchfab.com/AlanaSierra
+Licencia: Creative Commons Atribución 4.0 Internacional (CC BY 4.0)
+https://creativecommons.org/licenses/by/4.0/
+
+Cambios hechos para EmuMod (tools/ConvertirModelo.java): se pasó del formato GLB a un formato binario propio
+(assets/emumod/modelos/nds.bin). En el juego, las dos pantallas muestran el juego emulado y los botones se hunden al
+apretarlos.

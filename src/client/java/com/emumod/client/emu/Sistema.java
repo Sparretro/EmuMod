@@ -99,7 +99,23 @@ public enum Sistema {
 			entry("ppsspp_psp_model", "psp_2000_3000"),
 			// Sin recortar 2 líneas para dejarla en 16:9: la pantalla entera, 480x272
 			entry("ppsspp_cropto16x9", "disabled"),
-			entry("ppsspp_language", "Automatic")));
+			entry("ppsspp_language", "Automatic"))),
+	// melonDS DS (GPL-3), Nintendo DS: dibuja por software y entrega las dos pantallas una arriba de la otra (256x384).
+	// La táctil se toca con el puntero de libretro (el mouse). Sin BIOS usa las de reemplazo de melonDS; con las del
+	// jugador (sistema/melonDS DS: bios7.bin, bios9.bin y firmware.bin) EmuladorCliente le pasa «native»
+	NDS("melondsds_libretro", 256, 384, ".nds", Map.ofEntries(
+			entry("melonds_console_mode", "ds"),
+			entry("melonds_sysfile_mode", "builtin"),
+			entry("melonds_boot_mode", "direct"),
+			entry("melonds_render_mode", "software"),
+			entry("melonds_threaded_renderer", "enabled"),
+			entry("melonds_number_of_screen_layouts", "1"),
+			entry("melonds_screen_layout1", "top-bottom"),
+			entry("melonds_screen_gap", "0"),
+			entry("melonds_touch_mode", "touch"),
+			entry("melonds_show_cursor", "disabled"),
+			entry("melonds_show_bios_warnings", "disabled"),
+			entry("melonds_jit_enable", "enabled")));
 
 	/** Nombre de la DLL dentro de {@code natives/<plataforma>/}, sin extensión. */
 	public final String biblioteca;
@@ -122,12 +138,20 @@ public enum Sistema {
 	 * native/puente.
 	 */
 	boolean usaPuente() {
-		return this == N64 || this == PS2 || this == PS3 || this == WII || this == N3DS || this == PSP;
+		return this == N64 || this == PS2 || this == PS3 || this == WII || this == N3DS || this == PSP || this == NDS;
 	}
 
 	/** El núcleo lee el juego del disco (retro_game_info sin datos): las imágenes de PS2 y PS3 pesan gigas. */
 	public boolean leeDelDisco() {
 		return this == PS2 || this == PS3 || this == WII || this == N3DS || this == PSP;
+	}
+
+	/**
+	 * El manejador de excepciones del núcleo solo ve las de sus hilos (ver native/puente): melonDS DS registra uno para
+	 * todo el proceso que se cae con las excepciones normales de los otros hilos de Java.
+	 */
+	boolean filtraExcepciones() {
+		return this == NDS;
 	}
 
 	/** El núcleo dibuja con OpenGL: el puente le crea un contexto propio. */

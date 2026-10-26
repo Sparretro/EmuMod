@@ -166,6 +166,22 @@ public final class Controles {
 			Accion.palanca("Palanca izquierda", GLFW.GLFW_KEY_A, 0, 2),
 			Accion.palanca("Palanca derecha", GLFW.GLFW_KEY_D, 0, 3));
 
+	// DS: como la 3DS pero sin palanca: las flechas son la cruz. melonDS DS lee cada botón del RetroPad con su nombre
+	private static final List<Accion> NDS = List.of(
+			Accion.boton("Cruz arriba", GLFW.GLFW_KEY_UP, Boton.ARRIBA.mascara()),
+			Accion.boton("Cruz abajo", GLFW.GLFW_KEY_DOWN, Boton.ABAJO.mascara()),
+			Accion.boton("Cruz izquierda", GLFW.GLFW_KEY_LEFT, Boton.IZQUIERDA.mascara()),
+			Accion.boton("Cruz derecha", GLFW.GLFW_KEY_RIGHT, Boton.DERECHA.mascara()),
+			Accion.boton("A", GLFW.GLFW_KEY_X, Boton.A.mascara()),
+			Accion.boton("B", GLFW.GLFW_KEY_Z, Boton.B.mascara()),
+			Accion.boton("X", GLFW.GLFW_KEY_S, Boton.X.mascara()),
+			Accion.boton("Y", GLFW.GLFW_KEY_A, Boton.Y.mascara()),
+			Accion.boton("L", GLFW.GLFW_KEY_Q, Boton.L.mascara()),
+			Accion.boton("R", GLFW.GLFW_KEY_E, Boton.R.mascara()),
+			Accion.boton("Start", GLFW.GLFW_KEY_ENTER, Boton.START.mascara()),
+			Accion.boton("Start (2)", GLFW.GLFW_KEY_KP_ENTER, Boton.START.mascara()),
+			Accion.boton("Select", GLFW.GLFW_KEY_BACKSPACE, Boton.SELECT.mascara()));
+
 	/** Palanca a fondo; con Shift, a la mitad (para caminar). */
 	static final int PALANCA_MAXIMA = 32767;
 
@@ -182,6 +198,7 @@ public final class Controles {
 			case WII -> WII;
 			case N3DS -> N3DS;
 			case PSP -> PSP;
+			case NDS -> NDS;
 			default -> GBA_NES;
 		};
 	}

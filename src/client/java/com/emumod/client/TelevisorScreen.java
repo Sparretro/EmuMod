@@ -590,6 +590,7 @@ public class TelevisorScreen extends Screen {
 			case WII -> new String[] {"*.iso", "*.wbfs", "*.rvz", "*.gcm", "*.gcz", "*.ciso", "*.wia", "*.wad", "*.dol", "*.elf"};
 			case N3DS -> new String[] {"*.3ds", "*.cci", "*.cxi", "*.cia", "*.3dsx"};
 			case PSP -> new String[] {"*.iso", "*.cso", "*.chd", "*.pbp", "*.elf", "*.prx"};
+			case NDS -> new String[] {"*.nds"};
 			default -> new String[] {"*.gba"};
 		};
 		SelectorArchivos.abrir(Component.translatable("screen.emumod.elegir_rom" + sufijoTextos()).getString(),
@@ -599,10 +600,10 @@ public class TelevisorScreen extends Screen {
 
 	private void elegirBios() {
 		setFocused(null);
-		boolean ps2 = emulador.consola() == Sistema.PS2, ps3 = emulador.consola() == Sistema.PS3;
-		String clave = ps3 ? "_ps3" : ps2 ? "_ps2" : "";
+		boolean ps2 = emulador.consola() == Sistema.PS2, ps3 = emulador.consola() == Sistema.PS3, nds = emulador.consola() == Sistema.NDS;
+		String clave = ps3 ? "_ps3" : ps2 ? "_ps2" : nds ? "_nds" : "";
 		SelectorArchivos.abrir(Component.translatable("screen.emumod.elegir_bios" + clave).getString(),
-				ps3 ? new String[] {"*.PUP", "*.pup"} : new String[] {"*.bin", "*.BIN"},
+				ps3 ? new String[] {"*.PUP", "*.pup"} : nds ? new String[] {"*.bin", "*.BIN", "*.rom", "*.ROM"} : new String[] {"*.bin", "*.BIN"},
 				Component.translatable("screen.emumod.filtro_bios" + clave).getString(),
 				archivo -> {
 					EmuladorCliente.Mensaje resultado = emulador.instalarBios(archivo);
@@ -666,6 +667,9 @@ public class TelevisorScreen extends Screen {
 	}
 
 	private Component textoBotonBios() {
+		if (emulador.consola() == Sistema.NDS) {
+			return Component.translatable(EmuladorCliente.hayBiosNds() ? "screen.emumod.bios_nds_tuyas" : "screen.emumod.bios_nds_libres");
+		}
 		if (emulador.consola() == Sistema.PS2) {
 			return Component.translatable(emulador.biosPs2() != null ? "screen.emumod.bios_ps2_lista" : "screen.emumod.bios_ps2_falta");
 		}

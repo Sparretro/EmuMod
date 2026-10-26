@@ -80,6 +80,14 @@ final class HiloEmulador {
 		ordenes.add(() -> alTerminar.accept(cargarAhora(n -> n.cargarJuego(rom, nombre), nombre, rom.length / 1024)));
 	}
 
+	/** Como {@link #cargar}, pasándole antes opciones al núcleo (las BIOS del jugador en la DS). */
+	void cargar(byte[] rom, String nombre, java.util.Map<String, String> opciones, Consumer<Mensaje> alTerminar) {
+		ordenes.add(() -> alTerminar.accept(cargarAhora(n -> {
+			opciones.forEach(n::setOpcion);
+			n.cargarJuego(rom, nombre);
+		}, nombre, rom.length / 1024)));
+	}
+
 	/**
 	 * Carga un juego que el núcleo lee del disco (PS2), o arranca sin juego si {@code archivo} es null. {@code opciones}
 	 * se le pasan al núcleo antes (la BIOS elegida).
